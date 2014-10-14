@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>location.hash data page</title> 
+    
+</head>
+
+<body>
+
+<script src="../cross.js"></script>
+<script>
+
+     var obj = cross.initialize(
+        {
+            frameSrc: 'http://crossjs.leehey.org/location_hash/proxy.html',
+            pageType: 'data',
+            success: function(data) {
+                console.log(data);
+            },
+            beforesend: function() {
+                console.log('beforesend');
+            },
+            complete: function() {
+                console.log('complete');
+            },
+            error: function(e) {
+                console.log(e);
+            }
+        },
+        'location.hash'
+    );  
+
+    
+
+</script>
+</body>
+</html>

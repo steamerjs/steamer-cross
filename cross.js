@@ -8,7 +8,170 @@
 var cross = {};
 
 //method
-cross.method = {'jsonp': null, 'document.domain': null, 'location.hash': null, 'window.name': null, 'postMessage': null, 'cors': null};
+cross.method = {'jsonp': null, 'docdomain': null, 'lochash': null, 'window.name': null, 'postMessage': null, 'cors': null};
+
+
+//location.hash method object
+//arg.pageType
+//arg.frameSrc
+//arg.beforesend
+//arg.success
+//arg.complete
+//arg.error
+//arg.interval
+
+cross.method.lochash = function(arg) {
+
+	try {
+
+		if (! arg.pageType) {
+			throw 'please input page type main | data | proxy';
+		}
+
+		if (arg.pageType == 'main') {
+
+			if (! arg.frameSrc) {
+				throw 'please input frame src';
+			}
+
+			if (! arg.interval) {
+				arg.interval = 1000;
+			}
+
+			this.iframe = document.createElement('iframe');
+
+			this.iframe.src = arg.frameSrc + '#';
+
+			this.iframe.style.display = 'none';
+
+			window.document.body.appendChild(this.iframe);
+
+			var getHash = function() {
+
+				var data = location.hash ? location.hash.substring(1) : '';
+
+		   		console.log(data);
+
+			}
+
+			var hashInterval = setInterval(function(){getHash()}, arg.interval);	
+		}
+		else if (arg.pageType == 'data') {
+
+			if (! arg.frameSrc) {
+				throw 'please input frame src';
+			}
+
+			if (! arg.interval) {
+				arg.interval = 1000;
+			}
+
+			var figure = Math.random(0, 1) * 100;
+
+    		var msg = figure;
+
+    		this.iframe = document.createElement('iframe');
+    		
+    		this.iframe.id = "proxy";
+
+    		this.iframe.src = arg.frameSrc + '#' + msg;
+
+    		this.iframe.style.display ='none';
+
+    		document.body.appendChild(this.iframe);
+
+    		var proxy = document.getElementsByTagName('iframe')[0];
+
+    		var tick = function() {
+
+    			clearInterval(gap);
+
+    			figure = Math.random(0, 1) * 100;
+
+    			proxy.src = '';
+
+    			proxy.onload = function() {
+  					proxy.src = arg.frameSrc + '#' +figure;
+  					gap = setInterval(tick, 1000);
+  				}
+    		}
+
+    		var gap = false;
+
+    		gap = setInterval(tick, 1000);
+
+
+		}
+		else {
+
+    		window.parent.parent.location.hash = self.location.hash.substring(1);
+		}
+		
+	}
+	catch (e) {
+		if (arg.error) {
+			arg.error(e);
+		}
+	}
+}
+
+//document.domain method object
+//arg.frameSrc
+//arg.domain
+//arg.beforesend
+//arg.success
+//arg.complete
+//arg.error
+cross.method.docdomain = function(arg) {
+
+	try {
+
+		if (! arg.frameSrc) {
+			throw 'please input frame src';
+		}
+
+		if (! arg.domain) {
+			throw 'please input domain';
+		}
+
+		if (arg.beforesend) {
+			arg.beforesend();
+		}
+
+		this.iframe = document.createElement("iframe");
+
+		this.iframe.style.display = 'none';
+
+		this.iframe.src = arg.frameSrc;
+
+		window.document.body.appendChild(this.iframe);
+
+		window.document.domain = arg.domain;
+
+		this.iframe.onload = function() {
+
+			var dataDocument = this.contentDocument || this.contentWindow.document;
+
+			if (arg.success) {
+
+				arg.success(dataDocument);
+
+				if (arg.complete) {
+					arg.complete();
+				}
+			}
+			
+		}
+
+
+	}
+	catch (e) {
+		if (arg.error) {
+			arg.error(e);
+		}
+	}
+
+}
 
 //jsopn method object
 //arg.url
@@ -27,29 +190,26 @@ cross.method.jsonp = function(arg) {
 			throw 'please input callback function';
 		}
 		else {
+
+			if (arg.beforesend) {
+				arg.beforesend();
+			}
+
 			window.success = function(data) {
 				arg.success(data);
 
 				if (arg.complete) {
 					arg.complete();
 				}
-
-				script.remove();
 			}
 		}
 
-		var script = document.createElement("script");
-		script.src = arg.url + '?callback=this.success';
-		if (window.document.body.appendChild(script)) {
-
-			if (arg.beforesend) {
-				arg.beforesend();
-			}
-		}
+		this.script = document.createElement("script");
+		this.script.src = arg.url + '?callback=this.success';
+		window.document.body.appendChild(this.script);
 
 	}
-	catch(e) {
-		cross.errorReport(e);
+	catch (e) {
 
 		if (arg.error) {
 			arg.error(e);
@@ -135,7 +295,6 @@ cross.method.cors = function(arg) {
 			xmlhttp.send();
 		}
 		catch (e) {
-			cross.errorReport(e);
 
 			if (this.arg.error) {
 	    		this.arg.error();
@@ -157,10 +316,10 @@ cross.initialize = function(arg, method) {
  			return cross.method[method](arg);
  			break;
  		case 'document.domain':
- 			return cross.method[method](arg);
+ 			return cross.method['docdomain'](arg);
  			break;
  		case 'location.hash':
- 			return cross.method[method](arg);
+ 			return cross.method['lochash'](arg);
  			break;
  		case 'window.name':
  			return cross.method[method](arg);
