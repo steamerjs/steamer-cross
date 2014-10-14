@@ -10,6 +10,7 @@ var cross = {};
 //method
 cross.method = {'jsonp': null, 'docdomain': null, 'lochash': null, 'winname': null, 'postMessage': null, 'cors': null};
 
+
 //postMessage method object
 //arg.pageType
 //arg.frameSrc
@@ -420,8 +421,6 @@ cross.method.cors = function(arg) {
 			arg.data = {};
 		}
 
-		this.arg = arg;
-
 	}
 
 	//sendRequest
@@ -429,8 +428,8 @@ cross.method.cors = function(arg) {
 
 		try {
 
-			if (this.arg.beforesend) {
-				this.arg.beforesend();
+			if (arg.beforesend) {
+				arg.beforesend();
 			}
 
 			var xmlhttp;
@@ -444,37 +443,44 @@ cross.method.cors = function(arg) {
 	  			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
 	  		}
 
-	  		xmlhttp.onreadystatechange=function() {
-	  			if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-	    			
-	    			var data = JSON.parse(data);
+	  		var str = '';
 
-	    			if (this.arg.success) {
-	    				this.arg.success(data);
+			for (key in arg.data) {
+				str += key + '=' + arg.data[key];
+			}
+
+			if (str != '') {
+				str = '?' + str;
+			}
+
+			xmlhttp.open('GET', arg.url + str, arg.asyn);
+			xmlhttp.send();
+
+	  		xmlhttp.onreadystatechange=function() {
+
+	  			if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+	    			
+	    			var data = eval( '(' + xmlhttp.responseText + ')');
+
+	    			if (arg.success) {
+	    				arg.success(data);
+	    			}
+
+	    			if (arg.complete) {
+	    				arg.complete();
 	    			}
 
 	    		}
-	    		else {
-
-	    			throw 'Can\'t return data.';
-
+	    		else if (xmlhttp.readyState === 4 && xmlhttp.status !== 200) {
+	    			throw 'cannot return data';
 	    		}
 	  		}
 			
-
-			var str = '';
-
-			for (key in this.arg.data) {
-				str += key + '=' + this.arg.data[key];
-			}
-
-			xmlhttp.open('GET', this.arg.url + '?' + str + 'callback=success', this.arg.asyn);
-			xmlhttp.send();
 		}
 		catch (e) {
 
-			if (this.arg.error) {
-	    		this.arg.error();
+			if (arg.error) {
+	    		arg.error();
 	    	}
 		}
 
@@ -502,6 +508,9 @@ cross.initialize = function(arg, method) {
  			return cross.method['winname'](arg);
  			break;
  		case 'postMessage':
+ 			return cross.method[method](arg);
+ 			break;
+ 		case 'cors':
  			return cross.method[method](arg);
  			break;
  		default:
