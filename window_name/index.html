@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+    <title>=window.name index page</title> 
+</head>
+
+<body>
+
+<script src="../cross.js"></script>
+<script>
+    var obj = cross.initialize(
+    	{
+    		frameSrc: 'http://leehey.org/crossjs/window_name/data.html',
+            proxySrc: 'http://crossjs.leehey.org/window_name/proxy.html',
+            pageType: 'main',
+    		success: function(data) {
+    			console.log(data);
+    		},
+    		beforesend: function() {
+    			console.log('beforesend');
+    		},
+    		complete: function() {
+    			console.log('complete');
+    		},
+    		error: function(e) {
+    			console.log(e);
+    		}
+    	},
+    	'window.name'
+    );	
+</script>
+</body>
+</html>
