@@ -14,19 +14,15 @@
      var obj = cross.initialize(
         {
             frameSrc: 'http://crossjs.leehey.org/location_hash/proxy.html',
-            pageType: 'data',
-            success: function(data) {
-                console.log(data);
-            },
-            beforesend: function() {
-                console.log('beforesend');
-            },
-            complete: function() {
-                console.log('complete');
+            processData: function() {
+
+                return Math.random(0, 1) * 100;
+
             },
             error: function(e) {
-                console.log(e);
-            }
+                console.log('data page: ' + e);
+            },
+            pageType: 'data',
         },
         'location.hash'
     );  

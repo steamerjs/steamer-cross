@@ -20,6 +20,8 @@ cross.method = {'jsonp': null, 'docdomain': null, 'lochash': null, 'window.name'
 //arg.error
 //arg.interval
 
+//arg.processData
+
 cross.method.lochash = function(arg) {
 
 	try {
@@ -44,13 +46,19 @@ cross.method.lochash = function(arg) {
 
 			this.iframe.style.display = 'none';
 
+			if (arg.beforesend) {
+				arg.beforesend();		
+			}
+
 			window.document.body.appendChild(this.iframe);
 
 			var getHash = function() {
 
 				var data = location.hash ? location.hash.substring(1) : '';
 
-		   		console.log(data);
+		   		arg.success(data);
+
+		   		arg.complete();
 
 			}
 
@@ -62,19 +70,21 @@ cross.method.lochash = function(arg) {
 				throw 'please input frame src';
 			}
 
+			if (! arg.processData) {
+				throw 'please input processData function';
+			}
+
 			if (! arg.interval) {
 				arg.interval = 1000;
 			}
 
-			var figure = Math.random(0, 1) * 100;
-
-    		var msg = figure;
+			var getData = arg.processData();
 
     		this.iframe = document.createElement('iframe');
     		
     		this.iframe.id = "proxy";
 
-    		this.iframe.src = arg.frameSrc + '#' + msg;
+    		this.iframe.src = arg.frameSrc + '#' + getData;
 
     		this.iframe.style.display ='none';
 
@@ -82,21 +92,21 @@ cross.method.lochash = function(arg) {
 
     		var proxy = document.getElementsByTagName('iframe')[0];
 
+    		var gap = false;
+
     		var tick = function() {
 
     			clearInterval(gap);
 
-    			figure = Math.random(0, 1) * 100;
+    			getData = arg.processData();
 
     			proxy.src = '';
 
     			proxy.onload = function() {
-  					proxy.src = arg.frameSrc + '#' +figure;
+  					proxy.src = arg.frameSrc + '#' +getData;
   					gap = setInterval(tick, 1000);
   				}
     		}
-
-    		var gap = false;
 
     		gap = setInterval(tick, 1000);
 

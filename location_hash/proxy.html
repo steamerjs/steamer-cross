@@ -13,7 +13,10 @@
 
      var obj = cross.initialize(
         {
-            pageType: 'proxy'
+            pageType: 'proxy',
+            error: function(e) {
+                console.log('proxy page: ' + e);
+            }
         },
         'location.hash'
     );  
