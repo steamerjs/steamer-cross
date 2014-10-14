@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+    <title>=JSONP</title> 
+</head>
+
+<body>
+
+<script src="/crossJS/cross.js"></script>
+<script>
+    var obj = cross.initialize(
+    	{
+    		url: 'http://leehey.org/frontend/index.php',
+    		success: function(data) {
+    			console.log(data);
+    		},
+    		beforesend: function() {
+    			console.log('beforesend');
+    		},
+    		complete: function() {
+    			console.log('complete');
+    		}
+    	},
+    	'jsonp'
+    );	
+</script>
+</body>
+</html>

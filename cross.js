@@ -8,28 +8,71 @@
 var cross = {};
 
 //method
-cross.method = {'jsonp', 'document.domain', 'location.hash', 'window.name', 'postMessage'};
+cross.method = {'jsonp': null, 'document.domain': null, 'location.hash': null, 'window.name': null, 'postMessage': null, 'cors': null};
 
-//method object
+//jsopn method object
+//arg.url
+//arg.beforesend
+//arg.success
+//arg.complete
+//arg.error
+cross.method.jsonp = function(arg) {
+
+	try {
+		if (! arg.url) {
+			throw 'please input url';
+		}
+
+		if (! arg.success) {
+			throw 'please input callback function';
+		}
+		else {
+			window.success = function(data) {
+				arg.success(data);
+
+				if (arg.complete) {
+					arg.complete();
+				}
+
+				script.remove();
+			}
+		}
+
+		var script = document.createElement("script");
+		script.src = arg.url + '?callback=this.success';
+		if (window.document.body.appendChild(script)) {
+
+			if (arg.beforesend) {
+				arg.beforesend();
+			}
+		}
+
+	}
+	catch(e) {
+		cross.errorReport(e);
+
+		if (arg.error) {
+			arg.error(e);
+		}
+	}
+	
+}
+
+//cors method object
 //arg.url
 //arg.data
-//arg.dataType
 //arg.beforesend
 //arg.success
 //arg.end
 //arg.error
 //arg.method
 //arg.asyn
-cross.method.jsonp = function(arg) {
+cross.method.cors = function(arg) {
 
 	this.processArg = function(arg) {
 
 		if (! arg.url) {
 			throw 'Please input request url';
-		}
-
-		if (! arg.method) {
-			arg.method = 'GET';
 		}
 
 		if (! arg.asyn) {
@@ -38,10 +81,6 @@ cross.method.jsonp = function(arg) {
 
 		if (! arg.data || ! arg.data.length) {
 			arg.data = {};
-		}
-
-		if (! arg.dataType) {
-			arg.dataType = 'text';
 		}
 
 		this.arg = arg;
@@ -71,19 +110,7 @@ cross.method.jsonp = function(arg) {
 	  		xmlhttp.onreadystatechange=function() {
 	  			if (xmlhttp.readyState==4 && xmlhttp.status==200) {
 	    			
-	    			var data = false;
-
-	    			switch (this.arg.dataType) {
-	    				case 'xml':
-	    					data = xmlhttp.responseXML;
-	    					break;
-	    				case 'json':
-	    					data = JSON.parse(data);
-	    					break;
-	    				default:
-	    					data = xmlhttp.responseText;
-	    					break;
-	    			}
+	    			var data = JSON.parse(data);
 
 	    			if (this.arg.success) {
 	    				this.arg.success(data);
@@ -104,7 +131,7 @@ cross.method.jsonp = function(arg) {
 				str += key + '=' + this.arg.data[key];
 			}
 
-			xmlhttp.open(this.arg.method, this.arg.url + '?' + str, this.arg.asyn);
+			xmlhttp.open('GET', this.arg.url + '?' + str + 'callback=success', this.arg.asyn);
 			xmlhttp.send();
 		}
 		catch (e) {
@@ -148,11 +175,6 @@ cross.initialize = function(arg, method) {
 
 }
 
-//create object
-
-cross.create = function(arg, method) {
-
-}
 
 //error report function
 cross.errorReport = function(msg) {
