@@ -10,6 +10,89 @@ var cross = {};
 //method
 cross.method = {'jsonp': null, 'docdomain': null, 'lochash': null, 'winname': null, 'postMessage': null, 'cors': null};
 
+//postMessage method object
+//arg.pageType
+//arg.frameSrc
+//arg.processData
+//arg.beforesend
+//arg.success
+//arg.complete
+//arg.error
+cross.method.postMessage = function(arg) {
+
+	try {
+
+		if (! postMessage) {
+			throw 'your browser does not support postMessage';
+		}
+
+		if (! arg.pageType) {
+			throw 'please input page type main | data';
+		}
+
+		if (arg.pageType == 'main') {
+
+			if (! arg.frameSrc) {
+				throw 'please input frame src';
+			}
+
+			if (! arg.processData) {
+				throw 'please input processData function';
+			}
+
+			var iframe = window.document.createElement('iframe');
+
+			iframe.style.display = 'none';
+
+			iframe.src = arg.frameSrc;
+
+			if (arg.beforesend) {
+				arg.beforesend();
+			}
+
+			var getData = arg.processData();
+
+			window.document.body.appendChild(iframe);
+
+			var sendMsg = function() {
+
+				var frameWindow = iframe.contentWindow || iframe.contentDocument;
+				frameWindow.postMessage(getData, arg.frameSrc);
+			}
+
+			window.onload = sendMsg;
+
+
+		}
+		else if (arg.pageType == 'data') {
+
+			if (window.attachEvent) {
+				window.attachEvent('message', function(event){
+					if (arg.success) {
+						arg.success(event.data);
+					}
+
+				});
+			}
+			else {
+				 window.addEventListener('message', function(event){
+				 	if (arg.success) {
+						arg.success(event.data);
+					}
+
+			    }, true);
+			}
+
+		}
+
+	}
+	catch (e) {
+		if (arg.error) {
+			arg.error(e);
+		}
+	}
+
+}
 
 //window.name method object
 //arg.pageType
@@ -53,7 +136,7 @@ cross.method.winname = function(arg) {
 			var loadfn = function() {
 
 		        if (state === 1) {
-		        	var otherDocument = iframe.contentDocument || iframe.contentWindow;
+		        	var otherDocument = iframe.contentWindow || iframe.contentDocument ;
 		            var data = iframe.contentWindow.name; 
 
 		            if (arg.success) {
