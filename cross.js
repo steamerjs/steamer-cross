@@ -11,94 +11,6 @@
 // cross.method = {'jsonp': null, 'docdomain': null, 'lochash': null, 'winname': null, 'postMessage': null, 'cors': null};
 
 
-// //postMessage method object
-// //arg.pageType
-// //arg.frameSrc
-// //arg.processData
-// //arg.beforesend
-// //arg.success
-// //arg.complete
-// //arg.error
-// cross.method.postMessage = function(arg) {
-
-// 	try {
-
-// 		if (! postMessage) {
-// 			throw 'your browser does not support postMessage';
-// 		}
-
-// 		if (! arg.pageType) {
-// 			throw 'please input page type main | data';
-// 		}
-
-// 		if (arg.pageType == 'main') {
-
-// 			if (! arg.frameSrc) {
-// 				throw 'please input frame src';
-// 			}
-
-// 			if (! arg.processData) {
-// 				throw 'please input processData function';
-// 			}
-
-// 			var iframe = window.document.createElement('iframe');
-
-// 			iframe.style.display = 'none';
-
-// 			iframe.src = arg.frameSrc;
-
-// 			if (arg.beforesend) {
-// 				arg.beforesend();
-// 			}
-
-// 			var getData = arg.processData();
-
-// 			window.document.body.appendChild(iframe);
-
-// 			var sendMsg = function() {
-
-// 				var frameWindow = iframe.contentWindow || iframe.contentDocument;
-// 				frameWindow.postMessage(getData, arg.frameSrc);
-// 			}
-
-// 			window.onload = sendMsg;
-
-
-// 		}
-// 		else if (arg.pageType == 'data') {
-
-// 			if (window.attachEvent) {
-// 				window.attachEvent('message', function(event){
-// 					if (arg.success) {
-// 						arg.success(event.data);
-// 					}
-
-// 				});
-// 			}
-// 			else {
-// 				 window.addEventListener('message', function(event){
-// 				 	if (arg.success) {
-// 						arg.success(event.data);
-// 					}
-
-// 					if (arg.complete) {
-// 						arg.complete();
-// 					}
-
-// 			    }, true);
-// 			}
-
-// 		}
-
-// 	}
-// 	catch (e) {
-// 		if (arg.error) {
-// 			arg.error(e);
-// 		}
-// 	}
-
-// }
-
 // //window.name method object
 // //arg.pageType
 // //arg.frameSrc
@@ -297,159 +209,7 @@
 // 	}
 // }
 
-// //document.domain method object
-// //arg.frameSrc
-// //arg.domain
-// //arg.beforesend
-// //arg.success
-// //arg.complete
-// //arg.error
-// cross.method.docdomain = function(arg) {
 
-// 	try {
-
-// 		if (! arg.frameSrc) {
-// 			throw 'please input frame src';
-// 		}
-
-// 		if (! arg.domain) {
-// 			throw 'please input domain';
-// 		}
-
-// 		if (arg.beforesend) {
-// 			arg.beforesend();
-// 		}
-
-// 		var iframe = document.createElement("iframe");
-
-// 		iframe.style.display = 'none';
-
-// 		iframe.src = arg.frameSrc;
-
-// 		window.document.body.appendChild(iframe);
-
-// 		window.document.domain = arg.domain;
-
-// 		iframe.onload = function() {
-
-// 			var dataDocument = iframe.contentDocument || iframe.contentWindow.document;
-
-// 			if (arg.success) {
-
-// 				arg.success(dataDocument);
-
-// 				if (arg.complete) {
-// 					arg.complete();
-// 				}
-// 			}
-			
-// 		}
-
-
-// 	}
-// 	catch (e) {
-// 		if (arg.error) {
-// 			arg.error(e);
-// 		}
-// 	}
-
-// }
-
-// cross.method.docdomain = (function(arg) {
-
-// 	try {
-
-// 		if (! arg.frameSrc) {
-// 			throw 'please input frame src';
-// 		}
-
-// 		if (! arg.domain) {
-// 			throw 'please input domain';
-// 		}
-
-// 		if (arg.beforesend) {
-// 			arg.beforesend();
-// 		}
-
-// 		var iframe = document.createElement("iframe");
-
-// 		iframe.style.display = 'none';
-
-// 		iframe.src = arg.frameSrc;
-
-// 		window.document.body.appendChild(iframe);
-
-// 		window.document.domain = arg.domain;
-
-// 		iframe.onload = function() {
-
-// 			var dataDocument = iframe.contentDocument || iframe.contentWindow.document;
-
-// 			if (arg.success) {
-
-// 				arg.success(dataDocument);
-
-// 				if (arg.complete) {
-// 					arg.complete();
-// 				}
-// 			}
-			
-// 		}
-
-
-// 	}
-// 	catch (e) {
-// 		if (arg.error) {
-// 			arg.error(e);
-// 		}
-// 	}
-
-// })(arg);
-
-// //jsopn method object
-// //arg.url
-// //arg.beforesend
-// //arg.success
-// //arg.complete
-// //arg.error
-// cross.method.jsonp = function(arg) {
-
-// 	try {
-// 		if (! arg.url) {
-// 			throw 'please input url';
-// 		}
-
-// 		if (! arg.success) {
-// 			throw 'please input callback function';
-// 		}
-// 		else {
-
-// 			if (arg.beforesend) {
-// 				arg.beforesend();
-// 			}
-
-// 			window.success = function(data) {
-// 				arg.success(data);
-
-// 				if (arg.complete) {
-// 					arg.complete();
-// 				}
-// 			}
-// 		}
-
-// 		this.script = document.createElement("script");
-// 		this.script.src = arg.url + '?callback=this.success';
-// 		window.document.body.appendChild(this.script);
-
-// 	}
-// 	catch (e) {
-
-// 		if (arg.error) {
-// 			arg.error(e);
-// 		}
-// 	}
-	
-// }
 
 // //cors method object
 // //arg.url
@@ -736,7 +496,145 @@ function cross(arg) {
 			}
 		}
 
-	}
+	};
+
+
+	//postMessage method object
+	//arg.pageType
+	//arg.frameSrc
+	//arg.processData
+	//arg.beforesend
+	//arg.success
+	//arg.complete
+	//arg.error
+	var postMessage = {};
+	postMessage.request = function() {
+
+		try {
+
+			if (! postMessage) {
+				throw 'your browser does not support postMessage';
+			}
+
+			if (! arg.frameSrc) {
+				throw 'please input frame src';
+			}
+
+			if (! arg.processData) {
+				throw 'please input processData function';
+			}
+
+			var iframe = window.document.createElement('iframe');
+
+			iframe.style.display = 'none';
+
+			iframe.src = arg.frameSrc;
+
+			if (arg.beforesend) {
+				arg.beforesend();
+			}
+
+			var getData = arg.processData();
+
+			window.document.body.appendChild(iframe);
+
+			var sendMsg = function() {
+
+				var frameWindow = iframe.contentWindow || iframe.contentDocument;
+				frameWindow.postMessage(getData, arg.frameSrc);
+			};
+
+			window.onload = sendMsg;
+
+			if (window.attachEvent) {
+				window.attachEvent('message', function(event){
+					if (arg.success) {
+						arg.success(event.data);
+					}
+
+				});
+			}
+			else {
+				window.addEventListener('message', function(event){
+					if (arg.success) {
+						arg.success(event.data);
+					}
+
+					if (arg.complete) {
+						arg.complete();
+					}
+
+				}, true);
+			}
+
+
+		}
+		catch (e) {
+			if (arg.error) {
+				arg.error(e);
+			}
+		}
+
+	};
+
+	postMessage.response = function() {
+
+		try {
+
+			if (! postMessage) {
+				throw 'your browser does not support postMessage';
+			}
+
+			if (! arg.parentSrc) {
+				throw 'please input parent src';
+			}
+
+			if (! arg.processData) {
+				throw 'please input processData function';
+			}
+
+			var getData = arg.processData();
+
+			if (arg.beforesend) {
+				arg.beforesend();
+			}
+
+			var sendMsg = function() {
+
+				parent.postMessage(getData, arg.parentSrc);
+			};
+
+			window.onload = sendMsg;
+
+			if (window.attachEvent) {
+				window.attachEvent('message', function(event){
+					if (arg.success) {
+						arg.success(event.data);
+					}
+
+				});
+			}
+			else {
+				window.addEventListener('message', function(event){
+					if (arg.success) {
+						arg.success(event.data);
+					}
+
+					if (arg.complete) {
+						arg.complete();
+					}
+
+				}, true);
+			}
+
+		}
+		catch (e) {
+			if (arg.error) {
+				arg.error(e);
+			}
+		}
+		
+	};
 
 
 
@@ -745,7 +643,9 @@ function cross(arg) {
 	return {
 		jsonp: jsonp,
 		docdomainRequest: docdomain.request,
-		docdomainResponse: docdomain.response
+		docdomainResponse: docdomain.response,
+		postMessageRequest: postMessage.request,
+		postMessageResponse: postMessage.response
 	};
 
 }

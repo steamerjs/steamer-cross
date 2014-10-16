@@ -9,22 +9,26 @@
 
 <script src="../cross.js"></script>
 <script>
-    var obj = cross.initialize(
+    cx(
     	{
     		frameSrc: 'http://leehey.org/crossjs/postmessage/data.html',
-            pageType: 'main',
-            beforesend: function() {
-                console.log('beforesend');
-            },
             processData: function() {
-                return 'test data';
+                return 'test data from index.html';
+            },
+            beforesend: function() {
+                console.log('beforesend from index.html');
+            },
+            success: function(data) {
+                console.log(data);
+            },
+            complete: function() {
+                console.log('complete from index.html');
             },
     		error: function(e) {
     			console.log(e);
     		}
-    	},
-    	'postMessage'
-    );	
+    	}
+    ).postMessageRequest();	
 </script>
 </body>
 </html>
