@@ -15,6 +15,9 @@
     		success: function(data) {
     			console.log('from data.html ' + data);
     		},
+            complete: function() {
+                console.log('complete');
+            },
     		error: function(e) {
     			console.log(e);
     		}

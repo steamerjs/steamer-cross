@@ -13,11 +13,11 @@
     	{
     		frameSrc: 'http://leehey.org/crossjs/document_domain/data.html',
             domain: 'leehey.org',
+            beforesend: function() {
+                console.log('beforesend');
+            },
     		success: function(data) {
     			console.log(data);
-    		},
-    		beforesend: function() {
-    			console.log('beforesend');
     		},
     		complete: function() {
     			console.log('complete');

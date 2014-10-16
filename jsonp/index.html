@@ -12,11 +12,11 @@
     var obj = cross.initialize(
     	{
     		url: 'http://leehey.org/frontend/index.php',
+            beforesend: function() {
+                console.log('beforesend');
+            },
     		success: function(data) {
     			console.log(data);
-    		},
-    		beforesend: function() {
-    			console.log('beforesend');
     		},
     		complete: function() {
     			console.log('complete');

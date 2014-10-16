@@ -81,6 +81,10 @@ cross.method.postMessage = function(arg) {
 						arg.success(event.data);
 					}
 
+					if (arg.complete) {
+						arg.complete();
+					}
+
 			    }, true);
 			}
 

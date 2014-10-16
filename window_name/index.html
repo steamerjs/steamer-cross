@@ -14,11 +14,11 @@
     		frameSrc: 'http://leehey.org/crossjs/window_name/data.html',
             proxySrc: 'http://crossjs.leehey.org/window_name/proxy.html',
             pageType: 'main',
+            beforesend: function() {
+                console.log('beforesend');
+            },
     		success: function(data) {
     			console.log(data);
-    		},
-    		beforesend: function() {
-    			console.log('beforesend');
     		},
     		complete: function() {
     			console.log('complete');
