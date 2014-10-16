@@ -9,25 +9,24 @@
 
 <script src="../cross.js"></script>
 <script>
-    var obj = cross.initialize(
+    cx(
     	{
     		frameSrc: 'http://leehey.org/crossjs/document_domain/data.html',
             domain: 'leehey.org',
             beforesend: function() {
-                console.log('beforesend');
+                console.log('beforesend index.html');
             },
     		success: function(data) {
     			console.log(data);
     		},
     		complete: function() {
-    			console.log('complete');
+    			console.log('complete index.html');
     		},
     		error: function(e) {
     			console.log(e);
     		}
-    	},
-    	'document.domain'
-    );	
+    	}
+    ).docdomainRequest();	
 </script>
 </body>
 </html>

@@ -8,10 +8,28 @@
 <body>
 
 <div id="data">test data</div>
-
+<script src="../cross.js"></script>
 <script>
 
-    document.domain = 'leehey.org';
+    // document.domain = 'leehey.org';
+
+    cx(
+    	{
+            domain: 'leehey.org',
+            beforesend: function() {
+                console.log('beforesend data.html');
+            },
+    		success: function(data) {
+    			console.log(data);
+    		},
+    		complete: function() {
+    			console.log('complete data.html');
+    		},
+    		error: function(e) {
+    			console.log(e);
+    		}
+    	}
+    ).docdomainResponse();
 
 </script>
 </body>

@@ -304,56 +304,56 @@
 // //arg.success
 // //arg.complete
 // //arg.error
-// // cross.method.docdomain = function(arg) {
+// cross.method.docdomain = function(arg) {
 
-// // 	try {
+// 	try {
 
-// // 		if (! arg.frameSrc) {
-// // 			throw 'please input frame src';
-// // 		}
+// 		if (! arg.frameSrc) {
+// 			throw 'please input frame src';
+// 		}
 
-// // 		if (! arg.domain) {
-// // 			throw 'please input domain';
-// // 		}
+// 		if (! arg.domain) {
+// 			throw 'please input domain';
+// 		}
 
-// // 		if (arg.beforesend) {
-// // 			arg.beforesend();
-// // 		}
+// 		if (arg.beforesend) {
+// 			arg.beforesend();
+// 		}
 
-// // 		var iframe = document.createElement("iframe");
+// 		var iframe = document.createElement("iframe");
 
-// // 		iframe.style.display = 'none';
+// 		iframe.style.display = 'none';
 
-// // 		iframe.src = arg.frameSrc;
+// 		iframe.src = arg.frameSrc;
 
-// // 		window.document.body.appendChild(iframe);
+// 		window.document.body.appendChild(iframe);
 
-// // 		window.document.domain = arg.domain;
+// 		window.document.domain = arg.domain;
 
-// // 		iframe.onload = function() {
+// 		iframe.onload = function() {
 
-// // 			var dataDocument = iframe.contentDocument || iframe.contentWindow.document;
+// 			var dataDocument = iframe.contentDocument || iframe.contentWindow.document;
 
-// // 			if (arg.success) {
+// 			if (arg.success) {
 
-// // 				arg.success(dataDocument);
+// 				arg.success(dataDocument);
 
-// // 				if (arg.complete) {
-// // 					arg.complete();
-// // 				}
-// // 			}
+// 				if (arg.complete) {
+// 					arg.complete();
+// 				}
+// 			}
 			
-// // 		}
+// 		}
 
 
-// // 	}
-// // 	catch (e) {
-// // 		if (arg.error) {
-// // 			arg.error(e);
-// // 		}
-// // 	}
+// 	}
+// 	catch (e) {
+// 		if (arg.error) {
+// 			arg.error(e);
+// 		}
+// 	}
 
-// // }
+// }
 
 // cross.method.docdomain = (function(arg) {
 
@@ -633,10 +633,119 @@ function cross(arg) {
 		
 	};
 
+	//document.domain method object
+	//arg.frameSrc
+	//arg.domain
+	//arg.beforesend
+	//arg.success
+	//arg.complete
+	//arg.error
+	var docdomain = {};
+
+	docdomain.request = function() {
+
+		try {
+
+			if (! arg.frameSrc) {
+				throw 'please input frame src';
+			}
+
+			if (! arg.domain) {
+				throw 'please input domain';
+			}
+
+			if (arg.beforesend) {
+				arg.beforesend();
+			}
+
+			var iframe = document.createElement("iframe");
+
+			iframe.style.display = 'none';
+
+			iframe.src = arg.frameSrc;
+
+			window.document.body.appendChild(iframe);
+
+			window.document.domain = arg.domain;
+
+			iframe.onload = function() {
+
+				if (iframe.contentDocument || iframe.contentWindow.document){
+					var dataDocument = iframe.contentDocument || iframe.contentWindow.document;
+
+					if (arg.success) {
+
+						arg.success(dataDocument);
+
+						if (arg.complete) {
+							arg.complete();
+						}
+					}
+				}
+				else {
+					throw 'cannot get data';
+				}
+				
+			}
+
+
+		}
+		catch (e) {
+			if (arg.error) {
+				arg.error(e);
+			}
+		}
+
+	};
+
+	docdomain.response = function() {
+
+		try {
+
+			if (! arg.domain) {
+				throw 'please input domain';
+			}
+
+			if (arg.beforesend) {
+				arg.beforesend();
+			}
+
+			window.document.domain = arg.domain;
+
+			if (arg.success) {
+
+				if (window.parent.document) {
+					arg.success(window.parent.document);
+				}
+				else {
+					throw 'cannot get data';
+				}
+				
+
+			}
+
+			if (arg.complete) {
+				arg.complete();
+			}
+
+
+		}
+		catch (e) {
+			if (arg.error) {
+				arg.error(e);
+			}
+		}
+
+	}
+
+
+
 
 	//return module public method
 	return {
-		jsonp: jsonp
+		jsonp: jsonp,
+		docdomainRequest: docdomain.request,
+		docdomainResponse: docdomain.response
 	};
 
 }
