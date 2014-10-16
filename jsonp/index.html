@@ -9,7 +9,7 @@
 
 <script src="../cross.js"></script>
 <script>
-    var obj = cross.initialize(
+    cx(
     	{
     		url: 'http://leehey.org/frontend/index.php',
             beforesend: function() {
@@ -24,9 +24,8 @@
     		error: function(e) {
     			console.log(e);
     		}
-    	},
-    	'jsonp'
-    );	
+    	}
+    ).jsonp();	
 </script>
 </body>
 </html>
