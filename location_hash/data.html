@@ -11,7 +11,7 @@
 <script src="../cross.js"></script>
 <script>
 
-     var obj = cross.initialize(
+     cx(
         {
             frameSrc: 'http://crossjs.leehey.org/location_hash/proxy.html',
             processData: function() {
@@ -21,11 +21,9 @@
             },
             error: function(e) {
                 console.log('data page: ' + e);
-            },
-            pageType: 'data',
-        },
-        'location.hash'
-    );  
+            }
+        }
+    ).lochashResponse();  
 
     
 

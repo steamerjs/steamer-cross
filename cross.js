@@ -4,128 +4,6 @@
 //  *
 //  */
 
-// //main object
-// var cross = {};
-
-// //method
-// cross.method = {'jsonp': null, 'docdomain': null, 'lochash': null, 'winname': null, 'postMessage': null, 'cors': null};
-
-
-
-// //location.hash method object
-// //arg.pageType
-// //arg.frameSrc
-// //arg.beforesend
-// //arg.success
-// //arg.complete
-// //arg.error
-// //arg.interval
-
-// //arg.processData
-
-// cross.method.lochash = function(arg) {
-
-// 	try {
-
-// 		if (! arg.pageType) {
-// 			throw 'please input page type main | data | proxy';
-// 		}
-
-// 		if (arg.pageType == 'main') {
-
-// 			if (! arg.frameSrc) {
-// 				throw 'please input frame src';
-// 			}
-
-// 			if (! arg.interval) {
-// 				arg.interval = 1000;
-// 			}
-
-// 			var iframe = document.createElement('iframe');
-
-// 			iframe.src = arg.frameSrc + '#';
-
-// 			iframe.style.display = 'none';
-
-// 			if (arg.beforesend) {
-// 				arg.beforesend();		
-// 			}
-
-// 			window.document.body.appendChild(iframe);
-
-// 			var getHash = function() {
-
-// 				var data = location.hash ? location.hash.substring(1) : '';
-
-// 		   		arg.success(data);
-
-// 		   		arg.complete();
-
-// 			}
-
-// 			var hashInterval = setInterval(function(){getHash()}, arg.interval);	
-// 		}
-// 		else if (arg.pageType == 'data') {
-
-// 			if (! arg.frameSrc) {
-// 				throw 'please input frame src';
-// 			}
-
-// 			if (! arg.processData) {
-// 				throw 'please input processData function';
-// 			}
-
-// 			if (! arg.interval) {
-// 				arg.interval = 1000;
-// 			}
-
-// 			var getData = arg.processData();
-
-//     		var iframe = document.createElement('iframe');
-    		
-//     		iframe.id = "proxy";
-
-//     		iframe.src = arg.frameSrc + '#' + getData;
-
-//     		iframe.style.display ='none';
-
-//     		document.body.appendChild(iframe);
-
-//     		var proxy = document.getElementsByTagName('iframe')[0];
-
-//     		var gap = false;
-
-//     		var tick = function() {
-
-//     			clearInterval(gap);
-
-//     			getData = arg.processData();
-
-//     			proxy.src = '';
-
-//     			proxy.onload = function() {
-//   					proxy.src = arg.frameSrc + '#' +getData;
-//   					gap = setInterval(tick, 1000);
-//   				}
-//     		}
-
-//     		gap = setInterval(tick, 1000);
-
-
-// 		}
-// 		else if (arg.pageType == 'proxy'){
-
-//     		window.parent.parent.location.hash = self.location.hash.substring(1);
-// 		}
-		
-// 	}
-// 	catch (e) {
-// 		if (arg.error) {
-// 			arg.error(e);
-// 		}
-// 	}
-// }
-
 
 
 // //cors method object
@@ -637,7 +515,139 @@ function cross(arg) {
 				arg.error(e);
 			}
 		}
-	}
+	};
+
+
+	//location.hash method object
+	//arg.pageType
+	//arg.frameSrc
+	//arg.beforesend
+	//arg.success
+	//arg.complete
+	//arg.error
+	//arg.interval
+
+	//arg.processData
+	var lochash = {};
+	lochash.request = function() {
+
+		try {
+
+			if (! arg.pageType) {
+				throw 'please input page type main | data | proxy';
+			}
+
+			if (! arg.frameSrc) {
+				throw 'please input frame src';
+			}
+
+			if (! arg.interval) {
+				arg.interval = 1000;
+			}
+
+			var iframe = document.createElement('iframe');
+
+			iframe.src = arg.frameSrc + '#';
+
+			iframe.style.display = 'none';
+
+			if (arg.beforesend) {
+				arg.beforesend();		
+			}
+
+			window.document.body.appendChild(iframe);
+
+			var getHash = function() {
+
+				var data = location.hash ? location.hash.substring(1) : '';
+
+		   		arg.success(data);
+
+		   		arg.complete();
+
+			}
+
+			var hashInterval = setInterval(function(){getHash()}, arg.interval);	
+			
+		}
+		catch (e) {
+			if (arg.error) {
+				arg.error(e);
+			}
+		}
+	};
+
+	lochash.response = function() {
+
+		try {
+
+			if (! arg.frameSrc) {
+				throw 'please input frame src';
+			}
+
+			if (! arg.processData) {
+				throw 'please input processData function';
+			}
+
+			if (! arg.interval) {
+				arg.interval = 1000;
+			}
+
+			var getData = arg.processData();
+
+    		var iframe = document.createElement('iframe');
+    		
+    		iframe.id = "proxy";
+
+    		iframe.src = arg.frameSrc + '#' + getData;
+
+    		iframe.style.display ='none';
+
+    		document.body.appendChild(iframe);
+
+    		var proxy = document.getElementsByTagName('iframe')[0];
+
+    		var gap = false;
+
+    		var tick = function() {
+
+    			clearInterval(gap);
+
+    			getData = arg.processData();
+
+    			proxy.src = '';
+
+    			proxy.onload = function() {
+  					proxy.src = arg.frameSrc + '#' +getData;
+  					gap = setInterval(tick, 1000);
+  				}
+    		}
+
+    		gap = setInterval(tick, 1000);
+
+		}
+		catch (e) {
+			if (arg.error) {
+				arg.error(e);
+			}
+		}
+
+	};
+
+
+	lochash.proxy = function() {
+
+		try {
+			window.parent.parent.location.hash = self.location.hash.substring(1);
+		}
+		catch (e) {
+			if (arg.error) {
+				arg.error(e);
+			}
+		}
+	};
+
+
 
 
 	//return module public method
@@ -649,6 +659,9 @@ function cross(arg) {
 		postMessageResponse: postMessage.response,
 		winNameRequest: winname.request,
 		winNameResponse: winname.response,
+		lochashRequest: lochash.request,
+		lochashResponse: lochash.response,
+		lochashProxy: lochash.proxy,
 	};
 
 }

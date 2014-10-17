@@ -11,15 +11,13 @@
 <script src="../cross.js"></script>
 <script>
 
-     var obj = cross.initialize(
+     cx(
         {
-            pageType: 'proxy',
             error: function(e) {
                 console.log('proxy page: ' + e);
             }
-        },
-        'location.hash'
-    );  
+        }
+    ).lochashProxy();  
 
     
 

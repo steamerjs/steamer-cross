@@ -11,7 +11,7 @@
 <script src="../cross.js"></script>
 <script>
 
-	 var obj = cross.initialize(
+	 cx(
     	{
     		frameSrc: 'http://leehey.org/crossjs/location_hash/data.html',
     		pageType: 'main',
@@ -27,9 +27,8 @@
     		error: function(e) {
     			console.log('main page: ' + e);
     		}
-    	},
-    	'location.hash'
-    );	
+    	}
+    ).lochashRequest();	
 
     
 
