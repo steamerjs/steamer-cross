@@ -1,8 +1,6 @@
 cross.js README
 ==============
 
-
-
 <h1>跨域框架crossJS</h1>
 
 <h3><b>特别感谢鹏辉童鞋</b></h3>
@@ -13,7 +11,7 @@ cross.js README
 
 <h3>跨域方法 -- 单向</h3>
 <h4>jsonp</h4>
-<p>这是最直观的办法，只需要一个页面，在页面内包含一个指向数据页面的<script>，然后在src后面多加一个回调函数即可以获取数据。</p>
+<p>这是最直观的办法，只需要一个页面，在页面内包含一个指向数据页面的script tag，然后在src后面多加一个回调函数即可以获取数据。</p>
 
 <h4>location.hash</h4>
 <p>这个办法坑比较多，网上的办法会有些问题。这个办法需要三个页面，分别是主调用页(index.html), 数据页(data.html),和代理页(proxy.html)。实质的结构是，index.html里有一个iframe指向data.html，而data.html里又有一个iframe指向proxy.html。要注意的是,index.html和proxy.html主域和子域都相同，只有data.html是异域，因此当data.html生成数据时，将数据放在proxy.html链接的hash(#)后面，然后再由proxy.html里的代码通过parent.parent这样的调用，将数据放到proxy.html的祖父index.html的链接上面。</p>
@@ -47,3 +45,4 @@ Header set Access-Control-Allow-Origin *
 	<li><a target="blank" href="http://www.oschina.net/question/12_15673">JavaScript最全的10种跨域共享的方法</li>
 </ul>
 </p>
+
