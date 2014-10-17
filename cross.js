@@ -5,102 +5,6 @@
 //  */
 
 
-
-// //cors method object
-// //arg.url
-// //arg.data
-// //arg.beforesend
-// //arg.success
-// //arg.end
-// //arg.error
-// //arg.method
-// //arg.asyn
-// cross.method.cors = function(arg) {
-
-// 	this.processArg = function(arg) {
-
-// 		if (! arg.url) {
-// 			throw 'Please input request url';
-// 		}
-
-// 		if (! arg.asyn) {
-// 			arg.asyn = true;
-// 		}
-
-// 		if (! arg.data || ! arg.data.length) {
-// 			arg.data = {};
-// 		}
-
-// 	}
-
-// 	//sendRequest
-// 	this.sendRequest = function() {
-
-// 		try {
-
-// 			if (arg.beforesend) {
-// 				arg.beforesend();
-// 			}
-
-// 			var xmlhttp;
-
-// 			if (window.XMLHttpRequest) {
-// 	  			// code for IE7+, Firefox, Chrome, Opera, Safari
-// 	  			xmlhttp = new XMLHttpRequest();
-// 	  		}
-// 			else {
-// 				// code for IE6, IE5
-// 	  			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-// 	  		}
-
-// 	  		var str = '';
-
-// 			for (key in arg.data) {
-// 				str += key + '=' + arg.data[key];
-// 			}
-
-// 			if (str != '') {
-// 				str = '?' + str;
-// 			}
-
-// 			xmlhttp.open('GET', arg.url + str, arg.asyn);
-// 			xmlhttp.send();
-
-// 	  		xmlhttp.onreadystatechange=function() {
-
-// 	  			if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-	    			
-// 	    			var data = eval( '(' + xmlhttp.responseText + ')');
-
-// 	    			if (arg.success) {
-// 	    				arg.success(data);
-// 	    			}
-
-// 	    			if (arg.complete) {
-// 	    				arg.complete();
-// 	    			}
-
-// 	    		}
-// 	    		else if (xmlhttp.readyState === 4 && xmlhttp.status !== 200) {
-// 	    			throw 'cannot return data';
-// 	    		}
-// 	  		}
-			
-// 		}
-// 		catch (e) {
-
-// 			if (arg.error) {
-// 	    		arg.error();
-// 	    	}
-// 		}
-
-// 	}
-
-// 	this.processArg(arg);
-
-// 	this.sendRequest();
-// }
-
 // //initialization
 // cross.initialize = function(arg, method) {
 
@@ -647,6 +551,102 @@ function cross(arg) {
 		}
 	};
 
+	//cors method object
+	//arg.url
+	//arg.data
+	//arg.beforesend
+	//arg.success
+	//arg.end
+	//arg.error
+	//arg.method
+	//arg.asyn
+	var cors = {};
+	cors.request = function() {
+
+		this.processArg = function(arg) {
+
+			if (! arg.url) {
+				throw 'Please input request url';
+			}
+
+			if (! arg.asyn) {
+				arg.asyn = true;
+			}
+
+			if (! arg.data || ! arg.data.length) {
+				arg.data = {};
+			}
+
+		}
+
+		//sendRequest
+		this.sendRequest = function() {
+
+			try {
+
+				if (arg.beforesend) {
+					arg.beforesend();
+				}
+
+				var xmlhttp;
+
+				if (window.XMLHttpRequest) {
+		  			// code for IE7+, Firefox, Chrome, Opera, Safari
+		  			xmlhttp = new XMLHttpRequest();
+		  		}
+				else {
+					// code for IE6, IE5
+		  			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		  		}
+
+		  		var str = '';
+
+				for (key in arg.data) {
+					str += key + '=' + arg.data[key];
+				}
+
+				if (str != '') {
+					str = '?' + str;
+				}
+
+				xmlhttp.open('GET', arg.url + str, arg.asyn);
+				xmlhttp.send();
+
+		  		xmlhttp.onreadystatechange=function() {
+
+		  			if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+		    			
+		    			var data = eval( '(' + xmlhttp.responseText + ')');
+
+		    			if (arg.success) {
+		    				arg.success(data);
+		    			}
+
+		    			if (arg.complete) {
+		    				arg.complete();
+		    			}
+
+		    		}
+		    		else if (xmlhttp.readyState === 4 && xmlhttp.status !== 200) {
+		    			throw 'cannot return data';
+		    		}
+		  		}
+				
+			}
+			catch (e) {
+
+				if (arg.error) {
+		    		arg.error();
+		    	}
+			}
+
+		}
+
+		this.processArg(arg);
+
+		this.sendRequest();
+	}
+
 
 
 
@@ -662,6 +662,7 @@ function cross(arg) {
 		lochashRequest: lochash.request,
 		lochashResponse: lochash.response,
 		lochashProxy: lochash.proxy,
+		corsRequest: cors.request
 	};
 
 }

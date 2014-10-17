@@ -9,14 +9,14 @@
 
 <script src="../cross.js"></script>
 <script>
-    var obj = cross.initialize(
+    cx(
         {
             url: 'http://leehey.org/frontend/index.php',
-            success: function(data) {
-                console.log(data);
-            },
             beforesend: function() {
                 console.log('beforesend');
+            },
+            success: function(data) {
+                console.log(data);
             },
             complete: function() {
                 console.log('complete');
@@ -24,9 +24,8 @@
             error: function(e) {
                 console.log(e);
             }
-        },
-        'cors'
-    );  
+        }
+    ).corsRequest();  
 </script>
 </body>
 </html>
