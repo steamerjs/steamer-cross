@@ -4,42 +4,6 @@
 //  *
 //  */
 
-
-// //initialization
-// cross.initialize = function(arg, method) {
-
-//  	switch (method) {
-//  		case 'jsonp':
-//  			return cross.method[method](arg);
-//  			break;
-//  		case 'document.domain':
-//  			return cross.method['docdomain'](arg);
-//  			break;
-//  		case 'location.hash':
-//  			return cross.method['lochash'](arg);
-//  			break;
-//  		case 'window.name':
-//  			return cross.method['winname'](arg);
-//  			break;
-//  		case 'postMessage':
-//  			return cross.method[method](arg);
-//  			break;
-//  		case 'cors':
-//  			return cross.method[method](arg);
-//  			break;
-//  		default:
-//  			cross.errorReport('Wrong Method');
-//  			break;
-//  	}
-
-// }
-
-
-// //error report function
-// cross.errorReport = function(msg) {
-// 	console.log(msg);
-// }
-
 function cross(arg) {
 
 	//module private properties
@@ -74,11 +38,13 @@ function cross(arg) {
 
 					if (arg.complete) {
 						arg.complete();
+						window.document.getElementById('jsonp_script').remove();
 					}
 				}
 			}
 
 			this.script = document.createElement("script");
+			this.script.id = 'jsonp_script';
 			this.script.src = arg.url + '?callback=this.success';
 			window.document.body.appendChild(this.script);
 
@@ -157,6 +123,13 @@ function cross(arg) {
 
 	};
 
+
+	//document.domain method object
+	//arg.domain
+	//arg.beforesend
+	//arg.success
+	//arg.complete
+	//arg.error
 	docdomain.response = function() {
 
 		try {
@@ -199,7 +172,6 @@ function cross(arg) {
 
 
 	//postMessage method object
-	//arg.pageType
 	//arg.frameSrc
 	//arg.processData
 	//arg.beforesend
@@ -276,6 +248,13 @@ function cross(arg) {
 
 	};
 
+	//postMessage method object
+	//arg.parentSrc
+	//arg.processData
+	//arg.beforesend
+	//arg.success
+	//arg.complete
+	//arg.error
 	postMessage.response = function() {
 
 		try {
@@ -336,14 +315,12 @@ function cross(arg) {
 	};
 
 	//window.name method object
-	//arg.pageType
 	//arg.frameSrc
+	//arg.proxySrc
 	//arg.beforesend
 	//arg.success
 	//arg.complete
 	//arg.error
-
-	//arg.processData
 	var winname = {};
 	winname.request = function() {
 
@@ -405,6 +382,9 @@ function cross(arg) {
 		}
 	};
 
+	//window.name method object
+	//arg.processData
+	//arg.error
 	winname.response = function() {
 
 		try {
@@ -423,23 +403,16 @@ function cross(arg) {
 
 
 	//location.hash method object
-	//arg.pageType
 	//arg.frameSrc
 	//arg.beforesend
 	//arg.success
 	//arg.complete
 	//arg.error
 	//arg.interval
-
-	//arg.processData
 	var lochash = {};
 	lochash.request = function() {
 
 		try {
-
-			if (! arg.pageType) {
-				throw 'please input page type main | data | proxy';
-			}
 
 			if (! arg.frameSrc) {
 				throw 'please input frame src';
@@ -465,11 +438,19 @@ function cross(arg) {
 
 				var data = location.hash ? location.hash.substring(1) : '';
 
-		   		arg.success(data);
+				if (arg.success && data != '') {
+					arg.success(data);
 
-		   		arg.complete();
+					if (arg.complete) {
+			   			arg.complete();
+			   		}
+
+			   		clearInterval(hashInterval);
+				}
 
 			}
+
+			getHash();
 
 			var hashInterval = setInterval(function(){getHash()}, arg.interval);	
 			
@@ -481,6 +462,10 @@ function cross(arg) {
 		}
 	};
 
+	//location.hash method object
+	//arg.frameSrc
+	//arg.processData
+	//arg.error
 	lochash.response = function() {
 
 		try {
@@ -511,11 +496,7 @@ function cross(arg) {
 
     		var proxy = document.getElementsByTagName('iframe')[0];
 
-    		var gap = false;
-
     		var tick = function() {
-
-    			clearInterval(gap);
 
     			getData = arg.processData();
 
@@ -523,11 +504,10 @@ function cross(arg) {
 
     			proxy.onload = function() {
   					proxy.src = arg.frameSrc + '#' +getData;
-  					gap = setInterval(tick, 1000);
   				}
     		}
 
-    		gap = setInterval(tick, 1000);
+    		tick();
 
 		}
 		catch (e) {
@@ -538,7 +518,8 @@ function cross(arg) {
 
 	};
 
-
+	//location.hash method object
+	//arg.error
 	lochash.proxy = function() {
 
 		try {
@@ -556,9 +537,8 @@ function cross(arg) {
 	//arg.data
 	//arg.beforesend
 	//arg.success
-	//arg.end
+	//arg.complete
 	//arg.error
-	//arg.method
 	//arg.asyn
 	var cors = {};
 	cors.request = function() {
@@ -653,15 +633,15 @@ function cross(arg) {
 	//return module public method
 	return {
 		jsonp: jsonp,
-		docdomainRequest: docdomain.request,
-		docdomainResponse: docdomain.response,
+		docDomainRequest: docdomain.request,
+		docDomainResponse: docdomain.response,
 		postMessageRequest: postMessage.request,
 		postMessageResponse: postMessage.response,
 		winNameRequest: winname.request,
 		winNameResponse: winname.response,
-		lochashRequest: lochash.request,
-		lochashResponse: lochash.response,
-		lochashProxy: lochash.proxy,
+		locHashRequest: lochash.request,
+		locHashResponse: lochash.response,
+		locHashProxy: lochash.proxy,
 		corsRequest: cors.request
 	};
 

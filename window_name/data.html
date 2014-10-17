@@ -14,6 +14,9 @@ data
     		processData: function() {
 
                 return 'test data';
+            },
+            error: function(e) {
+                console.log('data page: ' + e);
             }
     	}
     ).winNameResponse();	

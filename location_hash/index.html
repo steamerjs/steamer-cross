@@ -14,21 +14,20 @@
 	 cx(
     	{
     		frameSrc: 'http://leehey.org/crossjs/location_hash/data.html',
-    		pageType: 'main',
             beforesend: function() {
-                console.log('beforesend');
+                console.log('beforesend from index.html');
             },
     		success: function(data) {
     			console.log(data);
     		},
     		complete: function() {
-    			console.log('complete');
+    			console.log('complete from index.html');
     		},
     		error: function(e) {
     			console.log('main page: ' + e);
     		}
     	}
-    ).lochashRequest();	
+    ).locHashRequest();	
 
     
 
