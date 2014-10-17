@@ -9,11 +9,10 @@
 
 <script src="../cross.js"></script>
 <script>
-    var obj = cross.initialize(
+    cx(
     	{
     		frameSrc: 'http://leehey.org/crossjs/window_name/data.html',
             proxySrc: 'http://crossjs.leehey.org/window_name/proxy.html',
-            pageType: 'main',
             beforesend: function() {
                 console.log('beforesend');
             },
@@ -26,9 +25,8 @@
     		error: function(e) {
     			console.log(e);
     		}
-    	},
-    	'window.name'
-    );	
+    	}
+    ).winNameRequest();	
 </script>
 </body>
 </html>

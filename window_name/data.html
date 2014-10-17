@@ -9,16 +9,14 @@
 data
 <script src="../cross.js"></script>
 <script>
-    var obj = cross.initialize(
+    cx(
     	{
-            pageType: 'data',
     		processData: function() {
 
                 return 'test data';
             }
-    	},
-    	'window.name'
-    );	
+    	}
+    ).winNameResponse();	
 </script>
 </body>
 </html>

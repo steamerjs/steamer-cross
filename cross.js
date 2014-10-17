@@ -11,89 +11,6 @@
 // cross.method = {'jsonp': null, 'docdomain': null, 'lochash': null, 'winname': null, 'postMessage': null, 'cors': null};
 
 
-// //window.name method object
-// //arg.pageType
-// //arg.frameSrc
-// //arg.beforesend
-// //arg.success
-// //arg.complete
-// //arg.error
-
-// //arg.processData
-// cross.method.winname = function(arg) {
-
-// 	try {
-
-// 		if (! arg.pageType) {
-// 			throw 'please input page type main | data';
-// 		}
-
-// 		if (arg.pageType == 'main') {
-
-// 			if (! arg.frameSrc) {
-// 				throw 'please input frame src';
-// 			}
-
-// 			if (! arg.proxySrc) {
-// 				throw 'please input proxy frame src';
-// 			}
-
-// 			var state = 0;
-
-// 			var iframe = window.document.createElement('iframe');
-
-// 			iframe.style.display = 'none';
-
-// 			iframe.src = arg.frameSrc;
-
-// 			if (arg.beforesend) {
-// 				arg.beforesend();
-// 			}
-
-// 			var loadfn = function() {
-
-// 		        if (state === 1) {
-// 		        	var otherDocument = iframe.contentWindow || iframe.contentDocument ;
-// 		            var data = iframe.contentWindow.name; 
-
-// 		            if (arg.success) {
-// 		            	arg.success(data);
-// 		            }
-
-// 		            if (arg.complete) {
-// 		            	arg.complete(data);
-// 		            }
-
-// 		        } else if (state === 0) {
-// 		            state = 1;
-// 		            iframe.contentWindow.location = arg.proxySrc;
-// 		        }  
-// 		    };
-
-// 		    if (iframe.attachEvent) {
-// 		        iframe.attachEvent('onload', loadfn);
-// 		    } else {
-// 		        iframe.onload  = loadfn;
-// 		    }
-
-// 		    window.document.body.appendChild(iframe);
-
-// 		}
-// 		else if (arg.pageType == 'data'){
-
-// 			if (arg.processData) {
-// 				window.name = arg.processData();
-// 			}
-			
-// 		}
-
-// 	}
-// 	catch (e) {
-// 		if (arg.error) {
-// 			arg.error(e);
-// 		}
-// 	}
-// }
 
 // //location.hash method object
 // //arg.pageType
@@ -636,7 +553,91 @@ function cross(arg) {
 		
 	};
 
+	//window.name method object
+	//arg.pageType
+	//arg.frameSrc
+	//arg.beforesend
+	//arg.success
+	//arg.complete
+	//arg.error
 
+	//arg.processData
+	var winname = {};
+	winname.request = function() {
+
+		try {
+
+			if (! arg.frameSrc) {
+				throw 'please input frame src';
+			}
+
+			if (! arg.proxySrc) {
+				throw 'please input proxy frame src';
+			}
+
+			var state = 0;
+
+			var iframe = window.document.createElement('iframe');
+
+			iframe.style.display = 'none';
+
+			iframe.src = arg.frameSrc;
+
+			if (arg.beforesend) {
+				arg.beforesend();
+			}
+
+			var loadfn = function() {
+
+		        if (state === 1) {
+		        	var otherDocument = iframe.contentWindow || iframe.contentDocument ;
+		            var data = iframe.contentWindow.name; 
+
+		            if (arg.success) {
+		            	arg.success(data);
+		            }
+
+		            if (arg.complete) {
+		            	arg.complete(data);
+		            }
+
+		        } else if (state === 0) {
+		            state = 1;
+		            iframe.contentWindow.location = arg.proxySrc;
+		        }  
+		    };
+
+		    if (iframe.attachEvent) {
+		        iframe.attachEvent('onload', loadfn);
+		    } else {
+		        iframe.onload  = loadfn;
+		    }
+
+		    window.document.body.appendChild(iframe);
+
+		}
+		catch (e) {
+			if (arg.error) {
+				arg.error(e);
+			}
+		}
+	};
+
+	winname.response = function() {
+
+		try {
+
+			if (arg.processData) {
+					window.name = arg.processData();
+			}
+
+		}
+		catch (e) {
+			if (arg.error) {
+				arg.error(e);
+			}
+		}
+	}
 
 
 	//return module public method
@@ -645,7 +646,9 @@ function cross(arg) {
 		docdomainRequest: docdomain.request,
 		docdomainResponse: docdomain.response,
 		postMessageRequest: postMessage.request,
-		postMessageResponse: postMessage.response
+		postMessageResponse: postMessage.response,
+		winNameRequest: winname.request,
+		winNameResponse: winname.response,
 	};
 
 }
