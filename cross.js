@@ -4,6 +4,9 @@
 //  *
 //  */
 
+//bug
+// attach event message / onmessage
+
 function cross(arg) {
 
 	//module private properties
@@ -540,6 +543,7 @@ function cross(arg) {
 	//arg.complete
 	//arg.error
 	//arg.asyn
+	//arg.method
 	var cors = {};
 	cors.request = function() {
 
