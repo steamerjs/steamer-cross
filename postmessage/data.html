@@ -16,16 +16,16 @@
                 return 'test data from data.html';
             },
             beforesend: function() {
-                console.log('beforesend from data.html');
+                cxLog('beforesend from data.html');
             },
             success: function(data) {
-                 console.log(data);
+                cxLog(data);
             },
             complete: function() {
-                 console.log('complete from data.html');
+                cxLog('complete from data.html');
             },
             error: function(e) {
-                console.log(e);
+                cxLog(e);
             }
         }
     ).postMessageResponse(); 

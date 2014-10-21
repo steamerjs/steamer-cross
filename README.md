@@ -22,7 +22,7 @@ cross.js README
 <p>大多数教程都是停留在这一步。这是不够的，还需要在index.html里面设置一个setInterval去监听index.html中#的变化，进而获取数据。据说有些高端浏览器里面可以直接用hashchange来监听，但低端的话最好还是用setInterval。因此框架里面用setInterval实现。</p>
 
 <h4>window.name</h4>
-<p>由于window.name在iframe的src的变化时不会改变，所以这个办法也可以用于跨域。这个方式虽然也需要跟location.hash也需要三个页面，但proxy.html的作用非常次要。由于data.html能够直接对window.name写值，因此写值完毕后，只需要将src改成与index.html主域和子域一致的页面，就可以让index.html直接调用了。</p>
+<p>由于window.name在iframe的src的变化时不会改变，所以这个办法也可以用于跨域。这个方式虽然也需要跟location.hash也需要三个页面，但proxy.html的作用非常次要。由于data.html能够直接对window.name写值，因此写值完毕后，只需要将src改成与index.html主域和子域一致的页面，就可以让index.html直接调用了。也有不需要proxy页面的写法，将iframe的src写成"about:blank;"就可以了。</p>
 
 
 <h3>跨域方法 -- 双向</h3>
@@ -38,7 +38,7 @@ cross.js README
 Header set Access-Control-Allow-Origin *
 </pre>
 <p>符号*代表接收任意的HTTP请求，你也可以通过修改，限制接受请求的域名或者IP地址。</p>
-
+<p>另外一个隐藏坑是，ie10以下的浏览器是不支持的。</p>
 
 <h3>参考资料</h3>
 <p>

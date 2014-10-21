@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>=cors</title> 
+    <title>cors</title> 
 </head>
 
 <body>
@@ -11,18 +11,44 @@
 <script>
     cx(
         {
-            url: 'http://leehey.org/frontend/index.php',
+            url: 'http://leehey.org/frontend/data.php',
+            method: 'GET',
+            processData: function() {
+                return {'hey': 'hey', 'omg': 'omg'};
+            },
             beforesend: function() {
-                console.log('beforesend');
+                cxLog('beforesend');
             },
             success: function(data) {
-                console.log(data);
+                cxLog(data);
             },
             complete: function() {
-                console.log('complete');
+                cxLog('complete');
             },
             error: function(e) {
-                console.log(e);
+                cxLog(e);
+            }
+        }
+    ).corsRequest();  
+
+    cx(
+        {
+            url: 'http://leehey.org/frontend/data.php',
+            method: 'POST',
+            processData: function() {
+                return {'hey': 'hey', 'omg': 'omg'};
+            },
+            beforesend: function() {
+                cxLog('beforesend');
+            },
+            success: function(data) {
+                cxLog(data);
+            },
+            complete: function() {
+                cxLog('complete');
+            },
+            error: function(e) {
+                cxLog(e);
             }
         }
     ).corsRequest();  

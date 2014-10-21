@@ -14,16 +14,16 @@
     		frameSrc: 'http://leehey.org/crossjs/document_domain/data.html',
             domain: 'leehey.org',
             beforesend: function() {
-                console.log('beforesend index.html');
+                cxLog('beforesend index.html');
             },
     		success: function(data) {
-    			console.log(data);
+    			cxLog(data);
     		},
     		complete: function() {
-    			console.log('complete index.html');
+    			cxLog('complete index.html');
     		},
     		error: function(e) {
-    			console.log(e);
+    			cxLog(e);
     		}
     	}
     ).docDomainRequest();	

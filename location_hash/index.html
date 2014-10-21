@@ -15,16 +15,16 @@
     	{
     		frameSrc: 'http://leehey.org/crossjs/location_hash/data.html',
             beforesend: function() {
-                console.log('beforesend from index.html');
+                cxLog('beforesend from index.html');
             },
     		success: function(data) {
-    			console.log(data);
+    			cxLog(data);
     		},
     		complete: function() {
-    			console.log('complete from index.html');
+    			cxLog('complete from index.html');
     		},
     		error: function(e) {
-    			console.log('main page: ' + e);
+    			cxLog('main page: ' + e);
     		}
     	}
     ).locHashRequest();	

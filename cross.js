@@ -41,7 +41,11 @@ function cross(arg) {
 
 					if (arg.complete) {
 						arg.complete();
-						window.document.getElementById('jsonp_script').remove();
+
+						var frameParent = window.document.getElementById('jsonp_script').parentNode;
+						var frame = window.document.getElementById('jsonp_script');
+
+						frameParent.removeChild(frame);
 					}
 				}
 			}
@@ -221,9 +225,13 @@ function cross(arg) {
 			window.onload = sendMsg;
 
 			if (window.attachEvent) {
-				window.attachEvent('message', function(event){
+				window.attachEvent('onmessage', function(event){
 					if (arg.success) {
 						arg.success(event.data);
+					}
+
+					if (arg.complete) {
+						arg.complete();
 					}
 
 				});
@@ -288,9 +296,13 @@ function cross(arg) {
 			window.onload = sendMsg;
 
 			if (window.attachEvent) {
-				window.attachEvent('message', function(event){
+				window.attachEvent('onmessage', function(event){
 					if (arg.success) {
 						arg.success(event.data);
+					}
+
+					if (arg.complete) {
+						arg.complete();
 					}
 
 				});
@@ -319,7 +331,6 @@ function cross(arg) {
 
 	//window.name method object
 	//arg.frameSrc
-	//arg.proxySrc
 	//arg.beforesend
 	//arg.success
 	//arg.complete
@@ -331,10 +342,6 @@ function cross(arg) {
 
 			if (! arg.frameSrc) {
 				throw 'please input frame src';
-			}
-
-			if (! arg.proxySrc) {
-				throw 'please input proxy frame src';
 			}
 
 			var state = 0;
@@ -365,7 +372,7 @@ function cross(arg) {
 
 		        } else if (state === 0) {
 		            state = 1;
-		            iframe.contentWindow.location = arg.proxySrc;
+		            iframe.contentWindow.location = "about:blank;";
 		        }  
 		    };
 
@@ -537,7 +544,6 @@ function cross(arg) {
 
 	//cors method object
 	//arg.url
-	//arg.data
 	//arg.beforesend
 	//arg.success
 	//arg.complete
@@ -547,89 +553,114 @@ function cross(arg) {
 	var cors = {};
 	cors.request = function() {
 
-		this.processArg = function(arg) {
+		try {
 
 			if (! arg.url) {
 				throw 'Please input request url';
 			}
 
-			if (! arg.asyn) {
+			if (! arg.processData) {
+				throw 'please input processData function';
+			}
+
+			if (typeof arg.asyn == undefined) {
 				arg.asyn = true;
 			}
 
-			if (! arg.data || ! arg.data.length) {
-				arg.data = {};
+			if (typeof arg.method == undefined) {
+				arg.method = "POST";
 			}
 
-		}
+			var getData = arg.processData();
 
-		//sendRequest
-		this.sendRequest = function() {
+			if (arg.beforesend) {
+				arg.beforesend();
+			}
 
-			try {
+			var xmlhttp = null;
 
-				if (arg.beforesend) {
-					arg.beforesend();
-				}
 
-				var xmlhttp;
+	  		var XMLHttpFactories = [
 
-				if (window.XMLHttpRequest) {
-		  			// code for IE7+, Firefox, Chrome, Opera, Safari
-		  			xmlhttp = new XMLHttpRequest();
-		  		}
-				else {
-					// code for IE6, IE5
-		  			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-		  		}
+	  			 function () {return new XMLHttpRequest()},
+	  			 function () {return new ActiveXObject("Msxml2.XMLHTTP")},
+	  			 function () {return new ActiveXObject("Msxml3.xmlhttp")},
+	  			 function () {return new ActiveXObject("Microsoft.XMLHTTP")}
 
-		  		var str = '';
+	  		];
 
-				for (key in arg.data) {
-					str += key + '=' + arg.data[key];
-				}
+	  		for (var i = 0; i < XMLHttpFactories.length; i++) {
+	  			try {
+	  				xmlhttp = XMLHttpFactories[i]();
+	  			}
+	  			catch (e) {
+	  				continue;
+	  			}
+	  			break;
+	  		}
 
-				if (str != '') {
-					str = '?' + str;
-				}
+	  		var appendData = '';
 
-				xmlhttp.open('GET', arg.url + str, arg.asyn);
+	  		if (getData instanceof Object) {
+
+	  			for (key in getData) {
+
+	  				if (getData.hasOwnProperty(key)) {
+	  					
+	  					if (appendData !== '') {
+	  						appendData += ('&' + key + '=' + getData[key]);
+	  					}
+	  					else {
+	  						appendData += (key + '=' + getData[key]);
+	  					}
+	  				}
+	  			}
+
+	  			if (appendData !== '' && arg.method == 'GET') {
+	  				arg.url += ('?' + appendData);
+	  			}
+	  		}
+
+	  		xmlhttp.onreadystatechange=function() {
+
+	  			if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+	    			
+	    			var data = eval( '(' + xmlhttp.responseText + ')');
+
+	    			if (arg.success) {
+	    				arg.success(data);
+	    			}
+
+	    			if (arg.complete) {
+	    				arg.complete();
+	    			}
+
+	    		}
+	    		else if (xmlhttp.readyState === 4 && xmlhttp.status !== 200) {
+	    			throw 'cannot return data';
+	    		}
+	  		}
+
+	  		xmlhttp.open(arg.method, arg.url, arg.asyn);
+
+			if (arg.method === "POST") {
+				xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+				xmlhttp.send(appendData);
+			}
+			else {
 				xmlhttp.send();
-
-		  		xmlhttp.onreadystatechange=function() {
-
-		  			if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-		    			
-		    			var data = eval( '(' + xmlhttp.responseText + ')');
-
-		    			if (arg.success) {
-		    				arg.success(data);
-		    			}
-
-		    			if (arg.complete) {
-		    				arg.complete();
-		    			}
-
-		    		}
-		    		else if (xmlhttp.readyState === 4 && xmlhttp.status !== 200) {
-		    			throw 'cannot return data';
-		    		}
-		  		}
-				
 			}
-			catch (e) {
+			
+		}
+		catch (e) {
 
-				if (arg.error) {
-		    		arg.error();
-		    	}
-			}
-
+			if (arg.error) {
+	    		arg.error(e);
+	    	}
 		}
 
-		this.processArg(arg);
 
-		this.sendRequest();
-	}
+	};
 
 
 
@@ -654,7 +685,24 @@ function cross(arg) {
 
 (function(win){
 
-	win.cx = cross;
+	if (!win.cx) {
+		win.cx = cross;
+	}
+	
+	if (!win.cxLog) {
+
+		win.cxLog = function(msg) {
+
+			if (window.console) {
+				console.log(msg);
+			}
+			else {
+				alert(msg);
+			}
+
+		};
+
+	}
 
 })(window);	
 
