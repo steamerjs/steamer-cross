@@ -38,7 +38,7 @@ cross.js README
 Header set Access-Control-Allow-Origin *
 </pre>
 <p>符号*代表接收任意的HTTP请求，你也可以通过修改，限制接受请求的域名或者IP地址。</p>
-
+<p>另外一个隐藏坑是，ie10以下的浏览器是不支持的。</p>
 
 <h3>参考资料</h3>
 <p>

@@ -584,28 +584,33 @@ function cross(arg) {
 					arg.beforesend();
 				}
 
-				var xmlhttp;
-
-				if (window.XMLHttpRequest) {
-		  			// code for IE7+, Firefox, Chrome, Opera, Safari
-		  			xmlhttp = new XMLHttpRequest();
-		  		}
-				else {
-					// code for IE6, IE5
-		  			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-		  		}
-
-		  		var str = '';
-
-				for (key in arg.data) {
-					str += key + '=' + arg.data[key];
+				if (typeof arg.asyn == undefined) {
+					arg.asyn = true;
 				}
 
-				if (str != '') {
-					str = '?' + str;
-				}
+				var xmlhttp = null;
 
-				xmlhttp.open('GET', arg.url + str, arg.asyn);
+
+		  		var XMLHttpFactories = [
+
+		  			 function () {return new XMLHttpRequest()},
+		  			 function () {return new ActiveXObject("Msxml2.XMLHTTP")},
+		  			 function () {return new ActiveXObject("Msxml3.xmlhttp")},
+		  			 function () {return new ActiveXObject("Microsoft.XMLHTTP")}
+
+		  		];
+
+		  		for (var i = 0; i < XMLHttpFactories.length; i++) {
+		  			try {
+		  				xmlhttp = XMLHttpFactories[i]();
+		  			}
+		  			catch (e) {
+		  				continue;
+		  			}
+		  			break;
+		  		}
+
+				xmlhttp.open('POST', arg.url, arg.asyn);
 				xmlhttp.send();
 
 		  		xmlhttp.onreadystatechange=function() {
@@ -632,7 +637,7 @@ function cross(arg) {
 			catch (e) {
 
 				if (arg.error) {
-		    		arg.error();
+		    		arg.error(e);
 		    	}
 			}
 
