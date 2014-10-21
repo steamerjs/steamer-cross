@@ -38,7 +38,7 @@ cross.js README
 Header set Access-Control-Allow-Origin *
 </pre>
 <p>符号*代表接收任意的HTTP请求，你也可以通过修改，限制接受请求的域名或者IP地址。</p>
-<p>另外一个隐藏坑是，ie10以下的浏览器是不支持的。值得注意的是，ie8和ie9是通过XDomainRequest来进行CORS通信的。XDomainRequest同样支持get和post方法。</p>
+<p>另外一个隐藏坑是，ie10以下的浏览器是不支持的。值得注意的是，ie8和ie9是通过XDomainRequest来进行CORS通信的。XDomainRequest同样支持get和post方法。对象详细内容请见参考资料。</p>
 <p>CORS支持情况：Chrome 4 , Firefox 3.5 , IE 8~9(XDomainRequest), IE 10+ , Opera 12 , Safari</p>
 
 <h3>参考资料</h3>
@@ -47,6 +47,7 @@ Header set Access-Control-Allow-Origin *
 	<li><a target="blank" href="http://targetkiller.net/cross-domain/">浅谈跨域</li>
 	<li><a target="blank" href="http://blog.csdn.net/hfahe/article/details/7730944">HTML5安全：CORS（跨域资源共享）简介</li>
 	<li><a target="blank" href="http://www.oschina.net/question/12_15673">JavaScript最全的10种跨域共享的方法</li>
+	<li><a target="blank" href="http://msdn.microsoft.com/en-us/library/cc288060(v=vs.85).aspx">XDomainRequest object</li>
 </ul>
 </p>
 
