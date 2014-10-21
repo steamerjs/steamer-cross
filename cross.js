@@ -225,9 +225,13 @@ function cross(arg) {
 			window.onload = sendMsg;
 
 			if (window.attachEvent) {
-				window.attachEvent('message', function(event){
+				window.attachEvent('onmessage', function(event){
 					if (arg.success) {
 						arg.success(event.data);
+					}
+
+					if (arg.complete) {
+						arg.complete();
 					}
 
 				});
@@ -292,9 +296,13 @@ function cross(arg) {
 			window.onload = sendMsg;
 
 			if (window.attachEvent) {
-				window.attachEvent('message', function(event){
+				window.attachEvent('onmessage', function(event){
 					if (arg.success) {
 						arg.success(event.data);
+					}
+
+					if (arg.complete) {
+						arg.complete();
 					}
 
 				});
