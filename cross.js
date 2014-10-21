@@ -41,7 +41,11 @@ function cross(arg) {
 
 					if (arg.complete) {
 						arg.complete();
-						window.document.getElementById('jsonp_script').remove();
+
+						var frameParent = window.document.getElementById('jsonp_script').parentNode;
+						var frame = window.document.getElementById('jsonp_script');
+
+						frameParent.removeChild(frame);
 					}
 				}
 			}
