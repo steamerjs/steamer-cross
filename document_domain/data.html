@@ -15,16 +15,16 @@
     	{
             domain: 'leehey.org',
             beforesend: function() {
-                console.log('beforesend data.html');
+                cxLog('beforesend data.html');
             },
     		success: function(data) {
-    			console.log(data);
+    			cxLog(data);
     		},
     		complete: function() {
-    			console.log('complete data.html');
+    			cxLog('complete data.html');
     		},
     		error: function(e) {
-    			console.log(e);
+    			cxLog(e);
     		}
     	}
     ).docDomainResponse();

@@ -629,7 +629,7 @@ function cross(arg) {
 		this.processArg(arg);
 
 		this.sendRequest();
-	}
+	};
 
 
 
@@ -654,7 +654,24 @@ function cross(arg) {
 
 (function(win){
 
-	win.cx = cross;
+	if (!win.cx) {
+		win.cx = cross;
+	}
+	
+	if (!win.cxLog) {
+
+		win.cxLog = function(msg) {
+
+			if (window.console) {
+				console.log(msg);
+			}
+			else {
+				alert(msg);
+			}
+
+		};
+
+	}
 
 })(window);	
 
