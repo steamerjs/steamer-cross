@@ -11,7 +11,33 @@
 <script>
     cx(
         {
-            url: 'http://leehey.org/frontend/index.php',
+            url: 'http://leehey.org/frontend/data.php',
+            method: 'GET',
+            processData: function() {
+                return {'hey': 'hey', 'omg': 'omg'};
+            },
+            beforesend: function() {
+                cxLog('beforesend');
+            },
+            success: function(data) {
+                cxLog(data);
+            },
+            complete: function() {
+                cxLog('complete');
+            },
+            error: function(e) {
+                cxLog(e);
+            }
+        }
+    ).corsRequest();  
+
+    cx(
+        {
+            url: 'http://leehey.org/frontend/data.php',
+            method: 'POST',
+            processData: function() {
+                return {'hey': 'hey', 'omg': 'omg'};
+            },
             beforesend: function() {
                 cxLog('beforesend');
             },

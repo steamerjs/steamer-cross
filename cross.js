@@ -549,7 +549,6 @@ function cross(arg) {
 
 	//cors method object
 	//arg.url
-	//arg.data
 	//arg.beforesend
 	//arg.success
 	//arg.complete
@@ -559,93 +558,113 @@ function cross(arg) {
 	var cors = {};
 	cors.request = function() {
 
-		this.processArg = function(arg) {
+		try {
 
 			if (! arg.url) {
 				throw 'Please input request url';
 			}
 
-			if (! arg.asyn) {
+			if (! arg.processData) {
+				throw 'please input processData function';
+			}
+
+			if (typeof arg.asyn == undefined) {
 				arg.asyn = true;
 			}
 
-			if (! arg.data || ! arg.data.length) {
-				arg.data = {};
+			if (typeof arg.method == undefined) {
+				arg.method = "POST";
 			}
 
-		}
+			var getData = arg.processData();
 
-		//sendRequest
-		this.sendRequest = function() {
+			if (arg.beforesend) {
+				arg.beforesend();
+			}
 
-			try {
-
-				if (arg.beforesend) {
-					arg.beforesend();
-				}
-
-				if (typeof arg.asyn == undefined) {
-					arg.asyn = true;
-				}
-
-				var xmlhttp = null;
+			var xmlhttp = null;
 
 
-		  		var XMLHttpFactories = [
+	  		var XMLHttpFactories = [
 
-		  			 function () {return new XMLHttpRequest()},
-		  			 function () {return new ActiveXObject("Msxml2.XMLHTTP")},
-		  			 function () {return new ActiveXObject("Msxml3.xmlhttp")},
-		  			 function () {return new ActiveXObject("Microsoft.XMLHTTP")}
+	  			 function () {return new XMLHttpRequest()},
+	  			 function () {return new ActiveXObject("Msxml2.XMLHTTP")},
+	  			 function () {return new ActiveXObject("Msxml3.xmlhttp")},
+	  			 function () {return new ActiveXObject("Microsoft.XMLHTTP")}
 
-		  		];
+	  		];
 
-		  		for (var i = 0; i < XMLHttpFactories.length; i++) {
-		  			try {
-		  				xmlhttp = XMLHttpFactories[i]();
-		  			}
-		  			catch (e) {
-		  				continue;
-		  			}
-		  			break;
-		  		}
+	  		for (var i = 0; i < XMLHttpFactories.length; i++) {
+	  			try {
+	  				xmlhttp = XMLHttpFactories[i]();
+	  			}
+	  			catch (e) {
+	  				continue;
+	  			}
+	  			break;
+	  		}
 
-				xmlhttp.open('POST', arg.url, arg.asyn);
+	  		var appendData = '';
+
+	  		if (getData instanceof Object) {
+
+	  			for (key in getData) {
+
+	  				if (getData.hasOwnProperty(key)) {
+	  					
+	  					if (appendData !== '') {
+	  						appendData += ('&' + key + '=' + getData[key]);
+	  					}
+	  					else {
+	  						appendData += (key + '=' + getData[key]);
+	  					}
+	  				}
+	  			}
+
+	  			if (appendData !== '' && arg.method == 'GET') {
+	  				arg.url += ('?' + appendData);
+	  			}
+	  		}
+
+	  		xmlhttp.onreadystatechange=function() {
+
+	  			if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+	    			
+	    			var data = eval( '(' + xmlhttp.responseText + ')');
+
+	    			if (arg.success) {
+	    				arg.success(data);
+	    			}
+
+	    			if (arg.complete) {
+	    				arg.complete();
+	    			}
+
+	    		}
+	    		else if (xmlhttp.readyState === 4 && xmlhttp.status !== 200) {
+	    			throw 'cannot return data';
+	    		}
+	  		}
+
+	  		xmlhttp.open(arg.method, arg.url, arg.asyn);
+
+			if (arg.method === "POST") {
+				xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+				xmlhttp.send(appendData);
+			}
+			else {
 				xmlhttp.send();
-
-		  		xmlhttp.onreadystatechange=function() {
-
-		  			if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-		    			
-		    			var data = eval( '(' + xmlhttp.responseText + ')');
-
-		    			if (arg.success) {
-		    				arg.success(data);
-		    			}
-
-		    			if (arg.complete) {
-		    				arg.complete();
-		    			}
-
-		    		}
-		    		else if (xmlhttp.readyState === 4 && xmlhttp.status !== 200) {
-		    			throw 'cannot return data';
-		    		}
-		  		}
-				
 			}
-			catch (e) {
+			
+		}
+		catch (e) {
 
-				if (arg.error) {
-		    		arg.error(e);
-		    	}
-			}
-
+			if (arg.error) {
+	    		arg.error(e);
+	    	}
 		}
 
-		this.processArg(arg);
 
-		this.sendRequest();
 	};
 
 
