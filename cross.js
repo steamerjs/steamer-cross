@@ -331,7 +331,6 @@ function cross(arg) {
 
 	//window.name method object
 	//arg.frameSrc
-	//arg.proxySrc
 	//arg.beforesend
 	//arg.success
 	//arg.complete
@@ -343,10 +342,6 @@ function cross(arg) {
 
 			if (! arg.frameSrc) {
 				throw 'please input frame src';
-			}
-
-			if (! arg.proxySrc) {
-				throw 'please input proxy frame src';
 			}
 
 			var state = 0;
@@ -377,7 +372,7 @@ function cross(arg) {
 
 		        } else if (state === 0) {
 		            state = 1;
-		            iframe.contentWindow.location = arg.proxySrc;
+		            iframe.contentWindow.location = "about:blank;";
 		        }  
 		    };
 
