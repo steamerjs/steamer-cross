@@ -190,7 +190,7 @@ function cross(arg) {
 
 		try {
 
-			if (! postMessage) {
+			if (! window.postMessage) {
 				throw 'your browser does not support postMessage';
 			}
 
@@ -270,7 +270,7 @@ function cross(arg) {
 
 		try {
 
-			if (! postMessage) {
+			if (! window.postMessage) {
 				throw 'your browser does not support postMessage';
 			}
 
@@ -350,17 +350,20 @@ function cross(arg) {
 
 			iframe.style.display = 'none';
 
+			iframe.id = 'dataFrame';
+
 			iframe.src = arg.frameSrc;
 
 			if (arg.beforesend) {
 				arg.beforesend();
 			}
 
-			var loadfn = function() {
+			var dataFrame = false;
+			var otherDocument = false;
 
+			var loadfn = function() {
 		        if (state === 1) {
-		        	var otherDocument = iframe.contentWindow || iframe.contentDocument ;
-		            var data = iframe.contentWindow.name; 
+		            var data = otherDocument.name; 
 
 		            if (arg.success) {
 		            	arg.success(data);
@@ -372,7 +375,11 @@ function cross(arg) {
 
 		        } else if (state === 0) {
 		            state = 1;
-		            iframe.contentWindow.location = "about:blank;";
+
+		            dataFrame = window.document.getElementById('dataFrame');
+		            otherDocument = dataFrame.contentWindow || dataFrame.contentDocument;
+
+		            otherDocument.location = "about:blank";
 		        }  
 		    };
 
@@ -411,6 +418,112 @@ function cross(arg) {
 		}
 	};
 
+	//window.navigator method object
+	//arg.frameSrc
+	//arg.beforesend
+	//arg.success
+	//arg.complete
+	//arg.error
+	var winnav = {};
+	winnav.request = function() {
+
+		try {
+
+			if (! arg.frameSrc) {
+				throw 'please input frame src';
+			}
+
+			var state = 0;
+
+			var iframe = window.document.createElement('iframe');
+
+			iframe.style.display = 'none';
+
+			iframe.id = 'dataFrame';
+
+			iframe.src = arg.frameSrc;
+
+			if (arg.processData) {
+				window.navigator['request_data'] = arg.processData();
+			}
+
+			if (arg.beforesend) {
+				arg.beforesend();
+			}
+
+			var dataFrame = false;
+			var otherDocument = false;
+
+			var loadfn = function() {
+		        if (state === 1) {
+		            var data = window.navigator['response_data'] || ''; 
+
+		            if (arg.success) {
+		            	arg.success(data);
+		            }
+
+		            if (arg.complete) {
+		            	arg.complete(data);
+		            }
+
+		        } else if (state === 0) {
+		            state = 1;
+
+		            dataFrame = window.document.getElementById('dataFrame');
+		            otherDocument = dataFrame.contentWindow || dataFrame.contentDocument;
+
+		            otherDocument.location = "about:blank";
+		        }  
+		    };
+
+		    if (iframe.attachEvent) {
+		        iframe.attachEvent('onload', loadfn);
+		    } else {
+		        iframe.onload  = loadfn;
+		    }
+
+		    window.document.body.appendChild(iframe);
+
+		}
+		catch (e) {
+			if (arg.error) {
+				arg.error(e);
+			}
+		}
+	};
+
+	//window.navigator method object
+	//arg.processData
+	//arg.error
+	winnav.response = function() {
+
+		try {
+
+			if (arg.processData) {
+					window.navigator['response_data'] = arg.processData();
+			}
+
+			if (arg.beforesend) {
+				arg.beforesend();
+			}
+
+			 var data = window.navigator['request_data'] || ''; 
+
+			if (arg.success) {
+		        arg.success(data);
+		    }
+
+		    if (arg.complete) {
+		        arg.complete(data);
+		    }
+
+		}
+		catch (e) {
+			if (arg.error) {
+				arg.error(e);
+			}
+		}
+	};
 
 	//location.hash method object
 	//arg.frameSrc
@@ -662,7 +775,28 @@ function cross(arg) {
 
 	};
 
+	//default method, cross browser compatibility
+	var crossBrowser = {};
 
+	crossBrowser.request = function() {
+
+		if (window.postMessage) {
+			postMessage.request();
+		}
+		else {
+			winnav.request();
+		}
+
+	};
+
+	crossBrowser.response = function() {
+		if (window.postMessage) {
+			postMessage.response();
+		}
+		else {
+			winnav.response();
+		}
+	};
 
 
 	//return module public method
@@ -674,10 +808,14 @@ function cross(arg) {
 		postMessageResponse: postMessage.response,
 		winNameRequest: winname.request,
 		winNameResponse: winname.response,
+		winNavRequest: winnav.request,
+		winNavResponse: winnav.response,
 		locHashRequest: lochash.request,
 		locHashResponse: lochash.response,
 		locHashProxy: lochash.proxy,
-		corsRequest: cors.request
+		corsRequest: cors.request,
+		request: crossBrowser.request,
+		response: crossBrowser.response
 	};
 
 }

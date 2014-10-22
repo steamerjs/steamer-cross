@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>cross browser data page</title> 
+</head>
+
+<body>
+data
+<script src="../cross.js"></script>
+<script>
+    cx(
+        {
+            parentSrc: 'http://crossjs.leehey.org/cross_browser/index.html',
+            processData: function() {
+
+                return "test data from data.html";
+            },
+            beforesend: function() {
+                cxLog('beforesend frome data.html');
+            },
+            success: function(data) {
+                cxLog(data);
+            },
+            complete: function() {
+                cxLog('complete frome data.html');
+            },
+            error: function(e) {
+                cxLog('data page: ' + e);
+            }
+        }
+    ).response(); 
+</script>
+</body>
+</html>

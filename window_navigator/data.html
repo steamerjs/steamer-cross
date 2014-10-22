@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+    <title>window.navigator data page</title> 
+</head>
+
+<body>
+data
+<script src="../cross.js"></script>
+<script>
+    cx(
+    	{
+    		processData: function() {
+
+                return "test data from data.html";
+            },
+            beforesend: function() {
+                cxLog('beforesend frome data.html');
+            },
+            success: function(data) {
+                cxLog(data);
+            },
+            complete: function() {
+                cxLog('complete frome data.html');
+            },
+            error: function(e) {
+                cxLog('data page: ' + e);
+            }
+    	}
+    ).winNavResponse();	
+</script>
+</body>
+</html>
