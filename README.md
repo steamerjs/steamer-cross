@@ -32,6 +32,9 @@ cross.js README
 <h4>postMessage</h4>
 <p>网上大部份教程都只教从index.html传数据到data.html。其实data.html也可以发数据到index.html。实现方法一样，只要在data.html里面发送的地址跟index.html的地址一样就可以了。否则浏览器会报错。这是比较优秀的一个办法，缺点是旧式浏览器并不支持。</p>
 
+<h4>window.navigator</h4>
+<p>这是ie6和ie7的一个安全bug。目前似乎还没有补丁打上，所以主页面和iframe页面之间可以自由调用。</p>
+
 <h4>cross origin resource sharing (cors)</h4>
 <p>这个办法前后端都涉及，因此前端的同学需要后端的配合。其实质只是一个ajax，可以接收除了post和get之后的其它服务器请求例如put。后端需要修改的是.htaccess文件。加入以下一句</p>
 <pre>
@@ -48,6 +51,7 @@ Header set Access-Control-Allow-Origin *
 	<li><a target="blank" href="http://blog.csdn.net/hfahe/article/details/7730944">HTML5安全：CORS（跨域资源共享）简介</li>
 	<li><a target="blank" href="http://www.oschina.net/question/12_15673">JavaScript最全的10种跨域共享的方法</li>
 	<li><a target="blank" href="http://msdn.microsoft.com/en-us/library/cc288060(v=vs.85).aspx">XDomainRequest object</li>
+	<li><a target="blank" href="http://www.alloyteam.com/2013/11/the-second-version-universal-solution-iframe-cross-domain-communication/">iframe跨域通信的通用解决方案-第二弹!（终极解决方案）</a></li>
 </ul>
 </p>
 
