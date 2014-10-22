@@ -696,6 +696,7 @@ function cross(arg) {
 	  		var XMLHttpFactories = [
 
 	  			 function () {return new XMLHttpRequest()},
+	  			 function () {return new XDomainRequest()},
 	  			 function () {return new ActiveXObject("Msxml2.XMLHTTP")},
 	  			 function () {return new ActiveXObject("Msxml3.xmlhttp")},
 	  			 function () {return new ActiveXObject("Microsoft.XMLHTTP")}
