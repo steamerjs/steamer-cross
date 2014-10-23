@@ -42,6 +42,20 @@ Header set Access-Control-Allow-Origin *
 </pre>
 <p>符号*代表接收任意的HTTP请求，你也可以通过修改，限制接受请求的域名或者IP地址。</p>
 <p>另外一个隐藏坑是，ie10以下的浏览器是不支持的。值得注意的是，ie8和ie9是通过XDomainRequest来进行CORS通信的。XDomainRequest同样支持get和post方法。对象详细内容请见参考资料。</p>
+<p>XDomainRequest的另一个坑是，当发送POST请求的时候，无法设置Header，如</p>
+<pre>
+xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+</pre>
+<p>
+这可能导致后台没法辨认POST数据。如果是PHP的话，后台需要特殊的处理，例如
+</p>
+<pre>
+if(isset($HTTP_RAW_POST_DATA))
+{
+	parse_str($HTTP_RAW_POST_DATA, $output);
+	echo json_encode($output);
+}
+</pre>
 <p>CORS支持情况：Chrome 4 , Firefox 3.5 , IE 8~9(XDomainRequest), IE 10+ , Opera 12 , Safari</p>
 
 <h3>参考资料</h3>
