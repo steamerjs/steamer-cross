@@ -695,11 +695,11 @@ function cross(arg) {
 
 	  		var XMLHttpFactories = [
 
-	  			 function () {return new XMLHttpRequest()},
-	  			 function () {return new XDomainRequest()},
-	  			 function () {return new ActiveXObject("Msxml2.XMLHTTP")},
-	  			 function () {return new ActiveXObject("Msxml3.xmlhttp")},
-	  			 function () {return new ActiveXObject("Microsoft.XMLHTTP")}
+	  			function () {return new XDomainRequest()},
+	  			function () {return new XMLHttpRequest()},
+	  			function () {return new ActiveXObject("Msxml2.XMLHTTP")},
+	  			function () {return new ActiveXObject("Msxml3.xmlhttp")},
+	  			function () {return new ActiveXObject("Microsoft.XMLHTTP")}
 
 	  		];
 
@@ -735,8 +735,7 @@ function cross(arg) {
 	  			}
 	  		}
 
-	  		xmlhttp.onreadystatechange=function() {
-
+  			xmlhttp.onreadystatechange = function() {
 	  			if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
 	    			
 	    			var data = eval( '(' + xmlhttp.responseText + ')');
@@ -755,10 +754,26 @@ function cross(arg) {
 	    		}
 	  		}
 
+	  		if (window.XDomainRequest) {
+	  			xmlhttp.onload = function() {
+	  				
+	  				var data = eval( '(' + xmlhttp.responseText + ')');
+	    			if (arg.success) {
+	    				arg.success(data);
+	    			}
+
+	    			if (arg.complete) {
+	    				arg.complete();
+	    			}
+	  			}
+	  		}
+	  		
 	  		xmlhttp.open(arg.method, arg.url, arg.asyn);
 
 			if (arg.method === "POST") {
-				xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+				if (xmlhttp.setRequestHeader) {
+					xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+				}
 				xmlhttp.send(appendData);
 			}
 			else {

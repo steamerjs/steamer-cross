@@ -14,7 +14,7 @@
             url: 'http://leehey.org/frontend/data.php',
             method: 'GET',
             processData: function() {
-                return {'hey': 'hey', 'omg': 'omg'};
+                return {'hey_get': 'hey', 'omg_get': 'omg'};
             },
             beforesend: function() {
                 cxLog('beforesend');
@@ -36,7 +36,7 @@
             url: 'http://leehey.org/frontend/data.php',
             method: 'POST',
             processData: function() {
-                return {'hey': 'hey', 'omg': 'omg'};
+                return {'hey_post': 'hey', 'omg_post': 'omg'};
             },
             beforesend: function() {
                 cxLog('beforesend');
