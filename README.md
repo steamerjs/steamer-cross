@@ -8,6 +8,11 @@ cross.js README
 <h3>Demo</h3>
 <p><a target="_blank" href="http://crossjs.leehey.org/">Demo</a>打开网页后，请打开web console查看数据结果</p>
 
+<h3>使用</h3>
+<p>
+各种办法的具体使用，可以参考不同的文件夹。其中文件夹cross_browser中的办法,是整合了postMessage以及window.navigator，使此办法能适用于所有的浏览器。所以如果没有特殊需求，可直接使用此办法进行双向通信。
+</p>
+
 <h3>灵感</h3>
 <p>由于业务需要，需要了解各种各样不同的跨域方式。但由于各种方式千奇百怪，我觉得有必要将各种方法封闭起来，方便使用。结构上，受jQuery Ajax的启发，希望也有beforesend, success和complete等比较固定的方法，希望让整个更为固定。</p>
 <p>本文主不会详细述说各种方法的具体实现，具体的办法可以点击后文参考资料里面的三篇文章。本文只会提及实现过程中的一些坑，以及框架的实现办法。具体的实现方法，可以参考cross.js文件，各种办法的实现，可以看对应文件夹里面的文件。</p>
