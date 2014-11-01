@@ -10,7 +10,8 @@ CrossJS 易用跨域库
 开始使用
 ==============
 
-CrossJS的使用相当快捷，而且仿照jQuery的Ajax部署格式。一般来说，跨域至少需要两个页面，请求页面以及反馈页面。首先两个页面都在body底部引用资源*cross.js*。
+CrossJS的使用相当快捷，而且仿照jQuery的Ajax部署格式。下面我们介绍跨浏览器支持的方法，其它独立的方法请参阅每个文件夹的的代码。
+一般来说，跨域至少需要两个页面，请求页面以及反馈页面。首先两个页面都在body底部引用资源*cross.js*。
 
 <script type="text/javascript" src="/cross.js"></script>
 
@@ -124,29 +125,30 @@ frameSrc: document.getElementById('dataFrame')
         }
     ).response();  
 ```
-
+具体你例子，可以参考demo里面的dom文件夹，也可以访问下面案例里面的链接参考demo。
 
 
 案例
 ==============
-* 操作dom http://crossjs.leehey.org/demo/dom/
+* <a href="http://crossjs.leehey.org/demo/dom/">操作dom</a>
 
 
 跨域知识点和实现中的坑
 ==============
-此页介绍跨域实现中的各种方法和坑
+<a href="https://github.com/lcxfs1991/crossJS/blob/modular-development-v2/crossdomain-knowledge.md">点击介绍跨域实现中的各种方法和坑</a>
+
 
 下面是crossJS实现的各种跨域方法demo页面
 <b>单向通信</b>
-* Cross Origin Resources Sharing(cors) http://crossjs.leehey.org/cors/
-* jsonp http://crossjs.leehey.org/jsonp/
-* window.name http://crossjs.leehey.org/window_name/
-* location.hash http://crossjs.leehey.org/location_hash/
+* <a href="http://crossjs.leehey.org/cors/">Cross Origin Resources Sharing(cors)</a>
+* <a href="http://crossjs.leehey.org/jsonp/">jsonp</a>
+* <a href="http://crossjs.leehey.org/window_name/">window.name</a>
+* <a href="http://crossjs.leehey.org/location_hash/">location.hash</a>
 
 <b>双向通信</b>
-* document.domain http://crossjs.leehey.org/cross_browser/
-* postMessage http://crossjs.leehey.org/postmessage/
-* window.navigator http://crossjs.leehey.org/window_navigator/
+* <a href="http://crossjs.leehey.org/cross_browser/">document.domain</a>
+* <a href="http://crossjs.leehey.org/postmessage/">postMessage
+* <a href="http://crossjs.leehey.org/window_navigator/">window.navigator</a>
 
 选项
 ==============
