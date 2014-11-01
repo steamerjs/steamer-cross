@@ -187,7 +187,7 @@ frameSrc: document.getElementById('dataFrame')
 		<td>需要发送请求的方法</td>
 	</tr>
 	<tr>
-		<td>domain/td>
+		<td>domain</td>
 		<td>适用于document.domain方法</td>
 		<td>String</td>
 		<td>请求页与反馈页统一的domain</td>
