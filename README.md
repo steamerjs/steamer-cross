@@ -1,76 +1,225 @@
-cross.js README
+CrossJS 易用跨域库
 ==============
 
-<h1>跨域框架crossJS</h1>
+特性
+==============
+* 简单易用，部署类似jQuery的Ajax方法
+* 无依赖，代码是原生javascript,免去第三方库
+* 跨浏览器支持, 支持IE6+, Chrome, Firefox2.0+, Safari
 
-<h3><b>特别感谢鹏辉童鞋</b></h3>
+开始使用
+==============
 
-<h3>Demo</h3>
-<p><a target="_blank" href="http://crossjs.leehey.org/">Demo</a>打开网页后，请打开web console查看数据结果</p>
+CrossJS的使用相当快捷，而且仿照jQuery的Ajax部署格式。一般来说，跨域至少需要两个页面，请求页面以及反馈页面。首先两个页面都在body底部引用资源*cross.js*。
 
-<h3>使用</h3>
-<p>
-各种办法的具体使用，可以参考不同的文件夹。其中文件夹cross_browser中的办法,是整合了postMessage以及window.navigator，使此办法能适用于所有的浏览器。所以如果没有特殊需求，可直接使用此办法进行双向通信。
-</p>
+<script type="text/javascript" src="/cross.js"></script>
 
-<h3>灵感</h3>
-<p>由于业务需要，需要了解各种各样不同的跨域方式。但由于各种方式千奇百怪，我觉得有必要将各种方法封闭起来，方便使用。结构上，受jQuery Ajax的启发，希望也有beforesend, success和complete等比较固定的方法，希望让整个更为固定。</p>
-<p>本文主不会详细述说各种方法的具体实现，具体的办法可以点击后文参考资料里面的三篇文章。本文只会提及实现过程中的一些坑，以及框架的实现办法。具体的实现方法，可以参考cross.js文件，各种办法的实现，可以看对应文件夹里面的文件。</p>
+然后，在请求页面输入下面javascript代码
 
-<h3>跨域方法 -- 单向</h3>
-<h4>jsonp</h4>
-<p>这是最直观的办法，只需要一个页面，在页面内包含一个指向数据页面的script tag，然后在src后面多加一个回调函数即可以获取数据。</p>
+``` javascript
+    cx(
+        {
+            url: 'http://leehey.org/crossjs/cross_browser/data.html',
+            processData: function() {
+                return "data from index.html";
+            },
+            beforesend: function() {
+                //before send process
+            },
+            success: function(data) {
+                //process data
+            },
+            complete: function() {
+                //complete process
+            },
+            error: function(e) {
+                //error message
+            }
+        }
+    ).request();  
+```
 
-<h4>location.hash</h4>
-<p>这个办法坑比较多，网上的办法会有些问题。这个办法需要三个页面，分别是主调用页(index.html), 数据页(data.html),和代理页(proxy.html)。实质的结构是，index.html里有一个iframe指向data.html，而data.html里又有一个iframe指向proxy.html。要注意的是,index.html和proxy.html主域和子域都相同，只有data.html是异域，因此当data.html生成数据时，将数据放在proxy.html链接的hash(#)后面，然后再由proxy.html里的代码通过parent.parent这样的调用，将数据放到proxy.html的祖父index.html的链接上面。</p>
+接着在反馈页面输入下面代码
+``` javascript
+    cx(
+        {
+            url: 'http://crossjs.leehey.org/cross_browser/index.html',
+            processData: function() {
+                return "data from data.html";
+            },
+            beforesend: function() {
+                //before send process
+            },
+            success: function(data) {
+                //process data
+            },
+            complete: function() {
+                //complete process
+            },
+            error: function(e) {
+                //error message
+            }
+        }
+    ).response();
+```
 
-<p>大多数教程都是停留在这一步。这是不够的，还需要在index.html里面设置一个setInterval去监听index.html中#的变化，进而获取数据。据说有些高端浏览器里面可以直接用hashchange来监听，但低端的话最好还是用setInterval。因此框架里面用setInterval实现。</p>
+以上代码即可完成最基本的跨域页面信息双向传递。
 
-<h4>window.name</h4>
-<p>由于window.name在iframe的src的变化时不会改变，所以这个办法也可以用于跨域。这个方式虽然也需要跟location.hash也需要三个页面，但proxy.html的作用非常次要。由于data.html能够直接对window.name写值，因此写值完毕后，只需要将src改成与index.html主域和子域一致的页面，就可以让index.html直接调用了。也有不需要proxy页面的写法，将iframe的src写成"about:blank;"就可以了。</p>
+如果你想用HTML加载的iframe而非crossJS帮你自动生成，你可以先在body里面建立一个iframe，指向你需要的反馈页面，例如
+
+```
+<iframe id="dataFrame" src="http://leehey.org/crossjs/cross_browser/data.html" width="100px" height="100px"></iframe>
+```
+
+然后请求页面里面，初始化的url选项改成frameSrc选项。更详细代码可以参考cross_browser里面的代码。
+
+``` javascript
+frameSrc: document.getElementById('dataFrame')
+```
 
 
-<h3>跨域方法 -- 双向</h3>
-<h4>document.domain</h4>
-<p>这个办法对于主调用页(index.html)和数据页(data.html)而言是双向的，即两个页面都可以得到对方的数据(主要是DOM元素)。实质就是index.html包含一个指向data.html的iframe，然后在data.html中改变document.domain，使之和index.html的document.domain是一样的，这样就可以使两个页面互相调用对方的数据。唯一的缺点是只能应用于子域不同，但主域相同的两个页面。</p>
+深入了解crossJS
+==============
+如果是想进行dom的操作，两个页面的javascript代码会有所不同。请求页面的代码如下:
+``` javascript
+    cx(
+        {
+            url: 'http://leehey.org/crossjs/demo/dom/target.html',
+            type: 'dom',
+            domain: 'leehey.org',
+            beforesend: function() {
+                //process before send
+            },
+            success: function(data) {
+                //process data
+            },
+            complete: function() {
+                //complete process
+            },
+            error: function(e) {
+                //error message
+            }
+        }
+    ).request();  
+```
+反馈页面的代码如下:
+``` javascript
+    cx(
+        {
+            frameSrc: 'http://crossjs.leehey.org/demo/dom/',
+            type: 'dom',
+            domain: 'leehey.org',
+            beforesend: function() {
+                //process before send
+            },
+            success: function(data) {
+                //process data
+            },
+            complete: function() {
+                //complete process
+            },
+            error: function(e) {
+                //error message
+            }
+        }
+    ).response();  
+```
 
-<h4>postMessage</h4>
-<p>网上大部份教程都只教从index.html传数据到data.html。其实data.html也可以发数据到index.html。实现方法一样，只要在data.html里面发送的地址跟index.html的地址一样就可以了。否则浏览器会报错。这是比较优秀的一个办法，缺点是旧式浏览器并不支持。</p>
 
-<h4>window.navigator</h4>
-<p>这是ie6和ie7的一个安全bug。目前似乎还没有补丁打上，所以主页面和iframe页面之间可以自由调用。</p>
 
-<h4>cross origin resource sharing (cors)</h4>
-<p>这个办法前后端都涉及，因此前端的同学需要后端的配合。其实质只是一个ajax，可以接收除了post和get之后的其它服务器请求例如put。后端需要修改的是.htaccess文件。加入以下一句</p>
-<pre>
-Header set Access-Control-Allow-Origin *
-</pre>
-<p>符号*代表接收任意的HTTP请求，你也可以通过修改，限制接受请求的域名或者IP地址。</p>
-<p>另外一个隐藏坑是，ie10以下的浏览器是不支持的。值得注意的是，ie8和ie9是通过XDomainRequest来进行CORS通信的。XDomainRequest同样支持get和post方法。对象详细内容请见参考资料。</p>
-<p>XDomainRequest的另一个坑是，当发送POST请求的时候，无法设置Header，如</p>
-<pre>
-xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-</pre>
-<p>
-这可能导致后台没法辨认POST数据。如果是PHP的话，后台需要特殊的处理，例如
-</p>
-<pre>
-if(isset($HTTP_RAW_POST_DATA))
-{
-	parse_str($HTTP_RAW_POST_DATA, $output);
-	echo json_encode($output);
-}
-</pre>
-<p>CORS支持情况：Chrome 4 , Firefox 3.5 , IE 8~9(XDomainRequest), IE 10+ , Opera 12 , Safari</p>
+案例
+==============
+* 操作dom http://crossjs.leehey.org/demo/dom/
 
-<h3>参考资料</h3>
-<p>
-<ul>
-	<li><a target="blank" href="http://targetkiller.net/cross-domain/">浅谈跨域</li>
-	<li><a target="blank" href="http://blog.csdn.net/hfahe/article/details/7730944">HTML5安全：CORS（跨域资源共享）简介</li>
-	<li><a target="blank" href="http://www.oschina.net/question/12_15673">JavaScript最全的10种跨域共享的方法</li>
-	<li><a target="blank" href="http://msdn.microsoft.com/en-us/library/cc288060(v=vs.85).aspx">XDomainRequest object</li>
-	<li><a target="blank" href="http://www.alloyteam.com/2013/11/the-second-version-universal-solution-iframe-cross-domain-communication/">iframe跨域通信的通用解决方案-第二弹!（终极解决方案）</a></li>
-</ul>
-</p>
+
+跨域知识点和实现中的坑
+==============
+此页介绍跨域实现中的各种方法和坑
+
+下面是crossJS实现的各种跨域方法demo页面
+<b>单向通信</b>
+* Cross Origin Resources Sharing(cors) http://crossjs.leehey.org/cors/
+* jsonp http://crossjs.leehey.org/jsonp/
+* window.name http://crossjs.leehey.org/window_name/
+* location.hash http://crossjs.leehey.org/location_hash/
+
+<b>双向通信</b>
+* document.domain http://crossjs.leehey.org/cross_browser/
+* postMessage http://crossjs.leehey.org/postmessage/
+* window.navigator http://crossjs.leehey.org/window_navigator/
+
+选项
+==============
+<table>
+<thead>
+	<tr>
+		<td>选项</td>
+		<td>适用</td>
+		<td>数值</td>
+		<td>解释</td>
+	</tr>
+</thead>
+<tbody>
+	<tr>
+		<td>url</td>
+		<td>所有方法</td>
+		<td>String</td>
+		<td>请求/反馈的页面url</td>
+	</tr>
+	<tr>
+		<td>frameSrc</td>
+		<td>除cors及jsonp外</td>
+		<td>iframe HTML Element</td>
+		<td>发送请求的iframe</td>
+	</tr>
+	<tr>
+		<td>removeFrame</td>
+		<td>适用于需要建立iframe的方法</td>
+		<td>Boolean (true | false)</td>
+		<td>是否在完成后去除removeFrame</td>
+	</tr>
+	<tr>
+		<td>method</td>
+		<td>适用于cors方法</td>
+		<td>String (GET | POST)</td>
+		<td>需要发送请求的方法</td>
+	</tr>
+	<tr>
+		<td>domain/td>
+		<td>适用于document.domain方法</td>
+		<td>String</td>
+		<td>请求页与反馈页统一的domain</td>
+	</tr>
+	<tr>
+		<td>processData</td>
+		<td>适用于单向通信的cors中的request, location.hash和window.name的response,双向通信的window.nagvigator和postMessage的request和response</td>
+		<td>Function</td>
+		<td>将需要发送给iframe的数据return即可</td>
+	</tr>
+	<tr>
+		<td>beforesend</td>
+		<td>除proxy页和window.name的反馈页外</td>
+		<td>Function</td>
+		<td>信息发送前回调函数</td>
+	</tr>
+	<tr>
+		<td>success</td>
+		<td>适用于双向通信的request和response页以及单向通信的request页</td>
+		<td>Function</td>
+		<td>数据获取回调函数</td>
+	</tr>
+	<tr>
+		<td>complete</td>
+		<td>除location_hash的proxy页和反馈页以及window.name的反馈页外</td>
+		<td>Function</td>
+		<td>信息接收完成回调函数</td>
+	</tr>
+	<tr>
+		<td>error</td>
+		<td>所有方法</td>
+		<td>Function</td>
+		<td>错误回调函数</td>
+	</tr>
+</tbody>
+</table>
 
