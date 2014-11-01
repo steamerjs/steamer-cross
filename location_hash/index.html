@@ -7,13 +7,14 @@
 </head>
 
 <body>
-
+<iframe id="dataFrame" src="http://leehey.org/crossjs/location_hash/data.html" width="100px" height="100px"></iframe>
 <script src="../cross.js"></script>
 <script>
 
 	 cx(
     	{
-    		frameSrc: 'http://leehey.org/crossjs/location_hash/data.html',
+    		// url: 'http://leehey.org/crossjs/location_hash/data.html',
+            frameSrc: document.getElementById('dataFrame'),
             beforesend: function() {
                 cxLog('beforesend from index.html');
             },

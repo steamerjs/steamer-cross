@@ -7,13 +7,14 @@
 </head>
 
 <body>
-
+<iframe id="dataFrame" src="http://crossjs.leehey.org/location_hash/proxy.html" width="100px" height="100px"></iframe>
 <script src="../cross.js"></script>
 <script>
 
      cx(
         {
-            frameSrc: 'http://crossjs.leehey.org/location_hash/proxy.html',
+            // url: 'http://crossjs.leehey.org/location_hash/proxy.html',
+            frameSrc: document.getElementById('dataFrame'),
             processData: function() {
 
                 return Math.random(0, 1) * 100;

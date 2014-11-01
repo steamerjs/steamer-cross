@@ -194,7 +194,7 @@ function cross(arg) {
 				throw 'your browser does not support postMessage';
 			}
 
-			if (! arg.frameSrc) {
+			if (! arg.frameSrc && ! arg.url) {
 				throw 'please input frame src';
 			}
 
@@ -202,11 +202,16 @@ function cross(arg) {
 				throw 'please input processData function';
 			}
 
-			var iframe = window.document.createElement('iframe');
+			if (arg.url) {
+				var iframe = window.document.createElement('iframe');
 
-			iframe.style.display = 'none';
+				iframe.style.display = 'none';
 
-			iframe.src = arg.frameSrc;
+				iframe.src = arg.url;
+			}
+			else {
+				var iframe = arg.frameSrc;
+			}
 
 			if (arg.beforesend) {
 				arg.beforesend();
@@ -219,7 +224,12 @@ function cross(arg) {
 			var sendMsg = function() {
 
 				var frameWindow = iframe.contentWindow || iframe.contentDocument;
-				frameWindow.postMessage(getData, arg.frameSrc);
+				if (arg.frameSrc) {
+					frameWindow.postMessage(getData, iframe.src);
+				}
+				else {
+					frameWindow.postMessage(getData, arg.url);
+				}
 			};
 
 			window.onload = sendMsg;
@@ -274,8 +284,8 @@ function cross(arg) {
 				throw 'your browser does not support postMessage';
 			}
 
-			if (! arg.parentSrc) {
-				throw 'please input parent src';
+			if (! arg.url) {
+				throw 'please input parent url';
 			}
 
 			if (! arg.processData) {
@@ -289,8 +299,7 @@ function cross(arg) {
 			}
 
 			var sendMsg = function() {
-
-				parent.postMessage(getData, arg.parentSrc);
+				parent.postMessage(getData, arg.url);
 			};
 
 			window.onload = sendMsg;
@@ -340,19 +349,26 @@ function cross(arg) {
 
 		try {
 
-			if (! arg.frameSrc) {
-				throw 'please input frame src';
+			if (! arg.frameSrc && ! arg.url) {
+				throw 'please input frame src or url';
 			}
 
 			var state = 0;
 
-			var iframe = window.document.createElement('iframe');
+			if (arg.url) {
+				var iframe = window.document.createElement('iframe');
 
-			iframe.style.display = 'none';
+				iframe.style.display = 'none';
 
-			iframe.id = 'dataFrame';
+				iframe.id = 'dataFrame';
 
-			iframe.src = arg.frameSrc;
+				iframe.src = arg.url;
+			}
+			else {
+
+				var iframe = arg.frameSrc;
+			}
+			
 
 			if (arg.beforesend) {
 				arg.beforesend();
@@ -537,7 +553,7 @@ function cross(arg) {
 
 		try {
 
-			if (! arg.frameSrc) {
+			if (! arg.frameSrc && ! arg.url) {
 				throw 'please input frame src';
 			}
 
@@ -545,23 +561,31 @@ function cross(arg) {
 				arg.interval = 1000;
 			}
 
-			var iframe = document.createElement('iframe');
+			if (arg.url) {
+				var iframe = document.createElement('iframe');
 
-			iframe.src = arg.frameSrc + '#';
+				iframe.src = arg.url + '#';
 
-			iframe.style.display = 'none';
+				iframe.style.display = 'none';
+
+				window.document.body.appendChild(iframe);
+			}
+			else {
+				var iframe = arg.frameSrc;
+				iframe.src += '#';
+			}
+			
 
 			if (arg.beforesend) {
 				arg.beforesend();		
 			}
 
-			window.document.body.appendChild(iframe);
 
 			var getHash = function() {
 
 				var data = location.hash ? location.hash.substring(1) : '';
 
-				if (arg.success && data != '') {
+				if (arg.success && data !== '') {
 					arg.success(data);
 
 					if (arg.complete) {
@@ -593,7 +617,7 @@ function cross(arg) {
 
 		try {
 
-			if (! arg.frameSrc) {
+			if (! arg.frameSrc && ! arg.url) {
 				throw 'please input frame src';
 			}
 
@@ -607,26 +631,28 @@ function cross(arg) {
 
 			var getData = arg.processData();
 
-    		var iframe = document.createElement('iframe');
+			if (arg.url) {
+				var iframe = document.createElement('iframe');
     		
-    		iframe.id = "proxy";
+	    		iframe.id = "proxy";
 
-    		iframe.src = arg.frameSrc + '#' + getData;
+	    		iframe.src = arg.url + '#' + getData;
 
-    		iframe.style.display ='none';
+	    		iframe.style.display ='none';
 
-    		document.body.appendChild(iframe);
-
-    		var proxy = document.getElementsByTagName('iframe')[0];
-
+	    		document.body.appendChild(iframe);
+			}
+			else {
+				var iframe = arg.frameSrc;
+				arg.frameSrc.src += ('#' + getData);
+			}
+    		
     		var tick = function() {
 
     			getData = arg.processData();
 
-    			proxy.src = '';
-
-    			proxy.onload = function() {
-  					proxy.src = arg.frameSrc + '#' +getData;
+    			iframe.onload = function() {
+  					iframe.src = iframe.src + '#' +getData;
   				}
     		}
 

@@ -6,12 +6,13 @@
 </head>
 
 <body>
-
+<iframe id="dataFrame" src="http://leehey.org/crossjs/window_name/data.html" width="100px" height="100px"></iframe>
 <script src="../cross.js"></script>
 <script>
     cx(
     	{
-    		frameSrc: 'http://leehey.org/crossjs/window_name/data.html',
+    		// url: 'http://leehey.org/crossjs/window_name/data.html',
+            frameSrc: document.getElementById('dataFrame'),
             beforesend: function() {
                 cxLog('beforesend');
             },
