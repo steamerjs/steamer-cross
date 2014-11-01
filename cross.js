@@ -13,6 +13,7 @@ function cross(arg) {
 	var request;
 	var response;
 	var proxy;
+	var transportType = (arg.type)? arg.type : 'msg';
 
 	//jsopn method object
 	//arg.url
@@ -466,7 +467,7 @@ function cross(arg) {
 			}
 
 			var removeFrame = (arg.removeFrame === true)? arg.removeFrame : false;
-			
+
 			var state = 0;
 
 			if (arg.url) {
@@ -846,22 +847,35 @@ function cross(arg) {
 
 	crossBrowser.request = function() {
 
-		if (window.postMessage) {
-			postMessage.request();
+		if (transportType === 'msg') {
+			if (window.postMessage) {
+				postMessage.request();
+			}
+			else {
+				winnav.request();
+			}
 		}
-		else {
-			winnav.request();
+		else if (transportType === 'dom') {
+			docdomain.request();
 		}
+		
 
 	};
 
 	crossBrowser.response = function() {
-		if (window.postMessage) {
-			postMessage.response();
+		
+		if (transportType === 'msg') {
+			if (window.postMessage) {
+				postMessage.response();
+			}
+			else {
+				winnav.response();
+			}
 		}
-		else {
-			winnav.response();
+		else if (transportType === 'dom') {
+			docdomain.response();
 		}
+		
 	};
 
 
