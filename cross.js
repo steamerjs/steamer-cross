@@ -78,7 +78,7 @@ function cross(arg) {
 
 		try {
 
-			if (! arg.frameSrc) {
+			if (! arg.frameSrc && ! arg.url) {
 				throw 'please input frame src';
 			}
 
@@ -90,14 +90,21 @@ function cross(arg) {
 				arg.beforesend();
 			}
 
-			var iframe = document.createElement("iframe");
+			var removeFrame = (arg.removeFrame === true)? arg.removeFrame : false;
 
-			iframe.style.display = 'none';
+			if (arg.url) {
+				var iframe = document.createElement("iframe");
 
-			iframe.src = arg.frameSrc;
+				iframe.style.display = 'none';
 
-			window.document.body.appendChild(iframe);
+				iframe.src = arg.url;
 
+				window.document.body.appendChild(iframe);
+			}
+			else {
+				var iframe = arg.frameSrc;
+			}
+			
 			window.document.domain = arg.domain;
 
 			iframe.onload = function() {
@@ -111,6 +118,8 @@ function cross(arg) {
 
 						if (arg.complete) {
 							arg.complete();
+
+							(! removeFrame) || (!iframe.parentNode) || iframe.parentNode.removeChild(iframe);
 						}
 					}
 				}
@@ -202,6 +211,8 @@ function cross(arg) {
 				throw 'please input processData function';
 			}
 
+			var removeFrame = (arg.removeFrame === true)? arg.removeFrame : false;
+
 			if (arg.url) {
 				var iframe = window.document.createElement('iframe');
 
@@ -242,6 +253,7 @@ function cross(arg) {
 
 					if (arg.complete) {
 						arg.complete();
+						(! removeFrame) || (!iframe.parentNode) || iframe.parentNode.removeChild(iframe);
 					}
 
 				});
@@ -254,6 +266,7 @@ function cross(arg) {
 
 					if (arg.complete) {
 						arg.complete();
+						(! removeFrame) || (!iframe.parentNode) || iframe.parentNode.removeChild(iframe);
 					}
 
 				}, true);
@@ -353,6 +366,8 @@ function cross(arg) {
 				throw 'please input frame src or url';
 			}
 
+			var removeFrame = (arg.removeFrame === true)? arg.removeFrame : false;
+
 			var state = 0;
 
 			if (arg.url) {
@@ -386,7 +401,8 @@ function cross(arg) {
 		            }
 
 		            if (arg.complete) {
-		            	arg.complete(data);
+		            	arg.complete();
+		            	(! removeFrame) || (!iframe.parentNode) || iframe.parentNode.removeChild(iframe);
 		            }
 
 		        } else if (state === 0) {
@@ -445,19 +461,27 @@ function cross(arg) {
 
 		try {
 
-			if (! arg.frameSrc) {
+			if (! arg.frameSrc && ! arg.url) {
 				throw 'please input frame src';
 			}
 
+			var removeFrame = (arg.removeFrame === true)? arg.removeFrame : false;
+			
 			var state = 0;
 
-			var iframe = window.document.createElement('iframe');
+			if (arg.url) {
+				var iframe = window.document.createElement('iframe');
 
-			iframe.style.display = 'none';
+				iframe.style.display = 'none';
 
-			iframe.id = 'dataFrame';
+				iframe.id = 'dataFrame';
 
-			iframe.src = arg.frameSrc;
+				iframe.src = arg.url;
+			}
+			else {
+				var iframe = arg.frameSrc;
+			}
+			
 
 			if (arg.processData) {
 				window.navigator['request_data'] = arg.processData();
@@ -471,6 +495,7 @@ function cross(arg) {
 			var otherDocument = false;
 
 			var loadfn = function() {
+
 		        if (state === 1) {
 		            var data = window.navigator['response_data'] || ''; 
 
@@ -479,13 +504,14 @@ function cross(arg) {
 		            }
 
 		            if (arg.complete) {
-		            	arg.complete(data);
+		            	arg.complete();
+		            	(! removeFrame) || (!iframe.parentNode) || iframe.parentNode.removeChild(iframe);
 		            }
 
 		        } else if (state === 0) {
 		            state = 1;
 
-		            dataFrame = window.document.getElementById('dataFrame');
+		            dataFrame = iframe;
 		            otherDocument = dataFrame.contentWindow || dataFrame.contentDocument;
 
 		            otherDocument.location = "about:blank";
@@ -498,8 +524,10 @@ function cross(arg) {
 		        iframe.onload  = loadfn;
 		    }
 
-		    window.document.body.appendChild(iframe);
-
+		    if (arg.url) {
+		    	window.document.body.appendChild(iframe);
+		    }
+		    
 		}
 		catch (e) {
 			if (arg.error) {
@@ -523,14 +551,14 @@ function cross(arg) {
 				arg.beforesend();
 			}
 
-			 var data = window.navigator['request_data'] || ''; 
+			var data = window.navigator['request_data'] || ''; 
 
 			if (arg.success) {
 		        arg.success(data);
 		    }
 
 		    if (arg.complete) {
-		        arg.complete(data);
+		        arg.complete();
 		    }
 
 		}
@@ -561,10 +589,12 @@ function cross(arg) {
 				arg.interval = 1000;
 			}
 
+			var removeFrame = (arg.removeFrame === true)? arg.removeFrame : false;
+
 			if (arg.url) {
 				var iframe = document.createElement('iframe');
 
-				iframe.src = arg.url + '#';
+				iframe.src = arg.url;
 
 				iframe.style.display = 'none';
 
@@ -572,7 +602,6 @@ function cross(arg) {
 			}
 			else {
 				var iframe = arg.frameSrc;
-				iframe.src += '#';
 			}
 			
 
@@ -590,6 +619,7 @@ function cross(arg) {
 
 					if (arg.complete) {
 			   			arg.complete();
+			   			(! removeFrame) || (!iframe.parentNode) || iframe.parentNode.removeChild(iframe);
 			   		}
 
 			   		clearInterval(hashInterval);
@@ -617,7 +647,7 @@ function cross(arg) {
 
 		try {
 
-			if (! arg.frameSrc && ! arg.url) {
+			if (! arg.url) {
 				throw 'please input frame src';
 			}
 
@@ -631,21 +661,15 @@ function cross(arg) {
 
 			var getData = arg.processData();
 
-			if (arg.url) {
-				var iframe = document.createElement('iframe');
+			var iframe = document.createElement('iframe');
     		
-	    		iframe.id = "proxy";
+	    	iframe.id = "proxy";
 
-	    		iframe.src = arg.url + '#' + getData;
+	    	iframe.src = arg.url + '#' + getData;
 
-	    		iframe.style.display ='none';
+	    	iframe.style.display ='none';
 
-	    		document.body.appendChild(iframe);
-			}
-			else {
-				var iframe = arg.frameSrc;
-				arg.frameSrc.src += ('#' + getData);
-			}
+	    	document.body.appendChild(iframe);
     		
     		var tick = function() {
 
