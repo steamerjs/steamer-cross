@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>demo dom target page</title> 
+</head>
+
+<body>
+<ul id="list"></ul>
+<script src="/crossjs/cross.js"></script>
+<script>
+    var dom = false;
+    cx(
+        {
+            frameSrc: document.getElementById('dataFrame'),
+            type: 'dom',
+            domain: 'leehey.org',
+            beforesend: function() {
+                cxLog('beforesend from index.html');
+            },
+            success: function(data) {
+                dom = data;
+            },
+            complete: function() {
+                dom.getElementById('title').innerHTML = 'List';
+            },
+            error: function(e) {
+                cxLog('index page' + e);
+            }
+        }
+    ).response();  
+</script>
+</body>
+</html>

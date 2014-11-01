@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>demo dom index page</title> 
+</head>
+
+<body>
+<div id="title">Pending Title</div>
+<iframe id="dataFrame" src="http://leehey.org/crossjs/demo/dom/target.html" width="400px" height="400px"></iframe>
+<script src="/cross.js"></script>
+<script>
+
+    var listData = false;
+    var dom = false;
+    cx(
+        {
+            frameSrc: document.getElementById('dataFrame'),
+            type: 'dom',
+            domain: 'leehey.org',
+            beforesend: function() {
+                listData = ['list1', 'list2', 'list3'];
+            },
+            success: function(data) {
+                dom = data;
+            },
+            complete: function() {
+                
+                var item = false;
+                for (var i = 0; i < listData.length; i++) {
+                    item = dom.createElement('li');
+                    item.innerHTML = listData[i];
+                    dom.getElementById('list').appendChild(item);
+                }
+
+            },
+            error: function(e) {
+                cxLog('index page' + e);
+            }
+        }
+    ).request();  
+</script>
+</body>
+</html>
