@@ -138,7 +138,7 @@ frameSrc: document.getElementById('dataFrame')
 <a href="https://github.com/lcxfs1991/crossJS/blob/modular-development-v2/crossdomain-knowledge.md">点击介绍跨域实现中的各种方法和坑</a>
 
 
-下面是crossJS实现的各种跨域方法demo页面
+下面是crossJS实现的各种跨域方法demo页面。请打开developer console查看浏览器的输出。
 <b>单向通信</b>
 * <a href="http://crossjs.leehey.org/cors/">Cross Origin Resources Sharing(cors)</a>
 * <a href="http://crossjs.leehey.org/jsonp/">jsonp</a>
