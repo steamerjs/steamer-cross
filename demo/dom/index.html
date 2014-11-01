@@ -10,27 +10,24 @@
 <iframe id="dataFrame" src="http://leehey.org/crossjs/demo/dom/target.html" width="400px" height="400px"></iframe>
 <script src="/cross_simple.js"></script>
 <script>
-
-    var listData = false;
-    var dom = false;
     cx(
         {
             frameSrc: document.getElementById('dataFrame'),
             type: 'dom',
             domain: 'leehey.org',
             beforesend: function() {
-                listData = ['list1', 'list2', 'list3'];
+                this.listData = ['list1', 'list2', 'list3'];
             },
-            success: function(data) {
-                dom = data;
+            success: function(dom) {
+                this.targetDom = dom;
             },
             complete: function() {
                 
                 var item = false;
-                for (var i = 0; i < listData.length; i++) {
-                    item = dom.createElement('li');
-                    item.innerHTML = listData[i];
-                    dom.getElementById('list').appendChild(item);
+                for (var i = 0; i < this.listData.length; i++) {
+                    item = this.targetDom.createElement('li');
+                    item.innerHTML = this.listData[i];
+                    this.targetDom.getElementById('list').appendChild(item);
                 }
 
             },

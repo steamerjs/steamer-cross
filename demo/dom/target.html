@@ -9,7 +9,6 @@
 <ul id="list"></ul>
 <script src="/crossjs/cross_simple.js"></script>
 <script>
-    var dom = false;
     cx(
         {
             frameSrc: document.getElementById('dataFrame'),
@@ -18,11 +17,11 @@
             beforesend: function() {
                 cxLog('beforesend from index.html');
             },
-            success: function(data) {
-                dom = data;
+            success: function(dom) {
+                this.parentDom = dom;
             },
             complete: function() {
-                dom.getElementById('title').innerHTML = 'List';
+                this.parentDom.getElementById('title').innerHTML = 'List';
             },
             error: function(e) {
                 cxLog('index page' + e);
