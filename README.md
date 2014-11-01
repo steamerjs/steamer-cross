@@ -6,12 +6,13 @@ CrossJS 易用跨域库
 * 简单易用，部署类似jQuery的Ajax方法
 * 无依赖，代码是原生javascript,免去第三方库
 * 跨浏览器支持, 支持IE6+, Chrome, Firefox2.0+, Safari
+* 支持市面上大部份跨域方案，既可控制dom，也可传递信息
 
 开始使用
 ==============
 
 CrossJS的使用相当快捷，而且仿照jQuery的Ajax部署格式。下面我们介绍跨浏览器支持的方法，其它独立的方法请参阅每个文件夹的的代码。
-一般来说，跨域至少需要两个页面，请求页面以及反馈页面。首先两个页面都在body底部引用资源*cross.js*。
+一般来说，跨域至少需要两个页面，请求页面以及反馈页面。首先两个页面都在body底部引用资源*cross.js(完整版, 支持所有跨域方法)*或*cross_simple.js（精简版,只有跨浏览器支持的代码)*。
 
 <script type="text/javascript" src="/cross.js"></script>
 
