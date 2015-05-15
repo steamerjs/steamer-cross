@@ -1,57 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <title>cors</title> 
+	<meta charset="utf-8" />
+    <title>jsonp</title> 
 </head>
 
 <body>
 
 <script src="../cross.js"></script>
 <script>
-    cx(
-        {
-            url: 'http://leehey.org/frontend/data.php',
-            method: 'GET',
-            processData: function() {
-                return {'hey_get': 'hey', 'omg_get': 'omg'};
-            },
-            beforesend: function() {
-                cxLog('beforesend');
-            },
-            success: function(data) {
-                cxLog(data);
-            },
-            complete: function() {
-                cxLog('complete');
-            },
-            error: function(e) {
-                cxLog(e);
-            }
-        }
-    ).corsRequest();  
+    var cx = new Cross({
+        url: 'http://leehey.org/frontend/data.php',
+        type: 'cors',
+        method: 'GET',
+        data: {'1': 'omg', '2': 'hey'}
+    });
 
-    cx(
-        {
-            url: 'http://leehey.org/frontend/data.php',
-            method: 'POST',
-            processData: function() {
-                return {'hey_post': 'hey', 'omg_post': 'omg'};
-            },
-            beforesend: function() {
-                cxLog('beforesend');
-            },
-            success: function(data) {
-                cxLog(data);
-            },
-            complete: function() {
-                cxLog('complete');
-            },
-            error: function(e) {
-                cxLog(e);
-            }
-        }
-    ).corsRequest();  
+    cx.before(function() {
+        console.log('before');
+    }).succ(function(result) {
+        console.log(result);
+    }).complete(function() {
+        console.log('complete');
+    }).fail(function(e) {
+        console.log(e);
+    }).send();
+
 </script>
 </body>
 </html>

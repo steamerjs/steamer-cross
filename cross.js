@@ -4,50 +4,119 @@
 //  *
 //  */
 
-//bug
-// attach event message / onmessage
 
-function cross(arg) {
 
-	//module private properties
-	var request;
-	var response;
-	var proxy;
-	var transportType = (arg.type)? arg.type : 'msg';
+function Cross(arg) {
 
-	//jsopn method object
-	//arg.url
-	//arg.beforesend
-	//arg.success
-	//arg.complete
-	//arg.error
-	var jsonp = function() {
+	this.beforeF = null;
+	this.succF = null;
+	this.completeF = null;
+	this.failF = null;
+	this.arg = arg;
+	
+	this.init(this.arg);
+}
 
+Cross.prototype = {
+
+	init: function(arg) {
 		try {
-			if (! arg.url) {
-				throw 'please input url';
+			if (!arg.type) {
+				throw 1;
 			}
+		}
+		catch (e) {
+			console.log(this.errorHandler(e));
+		}	
+	},
 
-			if (! arg.success) {
-				throw 'please input callback function';
+	errorHandler: function(e) {
+		var errorArr = [
+			'Please provide url',
+			'Please provice type',
+		];
+		if (typeof e === 'object') {
+			return errorArr[e];
+		}
+		else {
+			return e;
+		}
+	},
+
+	before: function(cb) {
+		this.beforeF = cb;
+		return this;
+	},
+
+	succ: function(cb) {
+		this.succF = cb;
+		this.arg.succ = this.succF;
+		return this;
+	},
+
+	complete: function(cb) {
+		this.completeF = cb;
+		this.arg.complete = this.completeF;
+		return this;
+	},
+
+	fail: function(cb) {
+		this.failF = cb;
+		return this;
+	},
+
+	send: function() {
+		try {
+
+			this.beforeF && this.beforeF();
+			switch(this.arg.type) {
+				case 'jsonp':
+					this.jsonp.request(this.arg);
+				break;
+
+				case 'cors':
+					this.cors.request(this.arg);
+				break;
+
+				case 'doc_domain':
+					this.doc_domain.request(this.arg);
+				break;
 			}
-			else {
+		}
+		catch (e) {
+			this.failF(this.errorHandler(e));
+		}
+	},
 
-				if (arg.beforesend) {
-					arg.beforesend();
-				}
+	receive: function() {
+		try {
+			this.beforeF && this.beforeF();
+			switch(this.arg.type) {
 
-				window.success = function(data) {
-					arg.success(data);
+				case 'doc_domain':
+					this.doc_domain.response(this.arg);
+				break;
 
-					if (arg.complete) {
-						arg.complete();
+			}
+			this.completeF && this.completeF();
+		}
+		catch(e) {
+			this.failF(this.errorHandler(e));
+		}
+	},
 
-						var frameParent = window.document.getElementById('jsonp_script').parentNode;
-						var frame = window.document.getElementById('jsonp_script');
+	jsonp: {
+		request: function(arg) {
+			window.success = function(data) {
+				arg.succ && arg.succ(data);
 
-						frameParent.removeChild(frame);
-					}
+				if (arg.complete) {
+					arg.complete();
+
+					var scriptParent = window.document.getElementById('jsonp_script').parentNode;
+					var script = window.document.getElementById('jsonp_script');
+
+					scriptParent.removeChild(script);
 				}
 			}
 
@@ -55,691 +124,25 @@ function cross(arg) {
 			this.script.id = 'jsonp_script';
 			this.script.src = arg.url + '?callback=this.success';
 			window.document.body.appendChild(this.script);
-
 		}
-		catch (e) {
+	},
 
-			if (arg.error) {
-				arg.error(e);
-			}
-		}
-		
-	};
+	cors: {
+		request: function(arg) {
 
-	//document.domain method object
-	//arg.frameSrc
-	//arg.domain
-	//arg.beforesend
-	//arg.success
-	//arg.complete
-	//arg.error
-	var docdomain = {};
-
-	docdomain.request = function() {
-
-		try {
-
-			if (! arg.frameSrc && ! arg.url) {
-				throw 'please input frame src';
-			}
-
-			if (! arg.domain) {
-				throw 'please input domain';
-			}
-
-			if (arg.beforesend) {
-				arg.beforesend();
-			}
-
-			var removeFrame = (arg.removeFrame === true)? arg.removeFrame : false;
-
-			if (arg.url) {
-				var iframe = document.createElement("iframe");
-
-				iframe.style.display = 'none';
-
-				iframe.src = arg.url;
-
-				window.document.body.appendChild(iframe);
-			}
-			else {
-				var iframe = arg.frameSrc;
-			}
-			
-			window.document.domain = arg.domain;
-
-			iframe.onload = function() {
-
-				if (iframe.contentDocument || iframe.contentWindow.document){
-					var dataDocument = iframe.contentDocument || iframe.contentWindow.document;
-
-					if (arg.success) {
-
-						arg.success(dataDocument);
-
-						if (arg.complete) {
-							arg.complete();
-
-							(! removeFrame) || (!iframe.parentNode) || iframe.parentNode.removeChild(iframe);
-						}
-					}
-				}
-				else {
-					throw 'cannot get data';
-				}
-				
-			}
-
-
-		}
-		catch (e) {
-			if (arg.error) {
-				arg.error(e);
-			}
-		}
-
-	};
-
-
-	//document.domain method object
-	//arg.domain
-	//arg.beforesend
-	//arg.success
-	//arg.complete
-	//arg.error
-	docdomain.response = function() {
-
-		try {
-
-			if (! arg.domain) {
-				throw 'please input domain';
-			}
-
-			if (arg.beforesend) {
-				arg.beforesend();
-			}
-
-			window.document.domain = arg.domain;
-
-			if (arg.success) {
-
-				if (window.parent.document) {
-					arg.success(window.parent.document);
-				}
-				else {
-					throw 'cannot get data';
-				}
-				
-
-			}
-
-			if (arg.complete) {
-				arg.complete();
-			}
-
-
-		}
-		catch (e) {
-			if (arg.error) {
-				arg.error(e);
-			}
-		}
-
-	};
-
-
-	//postMessage method object
-	//arg.frameSrc
-	//arg.processData
-	//arg.beforesend
-	//arg.success
-	//arg.complete
-	//arg.error
-	var postMessage = {};
-	postMessage.request = function() {
-
-		try {
-
-			if (! window.postMessage) {
-				throw 'your browser does not support postMessage';
-			}
-
-			if (! arg.frameSrc && ! arg.url) {
-				throw 'please input frame src';
-			}
-
-			if (! arg.processData) {
-				throw 'please input processData function';
-			}
-
-			var removeFrame = (arg.removeFrame === true)? arg.removeFrame : false;
-
-			if (arg.url) {
-				var iframe = window.document.createElement('iframe');
-
-				iframe.style.display = 'none';
-
-				iframe.src = arg.url;
-			}
-			else {
-				var iframe = arg.frameSrc;
-			}
-
-			if (arg.beforesend) {
-				arg.beforesend();
-			}
-
-			var getData = arg.processData();
-
-			window.document.body.appendChild(iframe);
-
-			var sendMsg = function() {
-
-				var frameWindow = iframe.contentWindow || iframe.contentDocument;
-				if (arg.frameSrc) {
-					frameWindow.postMessage(getData, iframe.src);
-				}
-				else {
-					frameWindow.postMessage(getData, arg.url);
-				}
-			};
-
-			window.onload = sendMsg;
-
-			if (window.attachEvent) {
-				window.attachEvent('onmessage', function(event){
-					if (arg.success) {
-						arg.success(event.data);
-					}
-
-					if (arg.complete) {
-						arg.complete();
-						(! removeFrame) || (!iframe.parentNode) || iframe.parentNode.removeChild(iframe);
-					}
-
-				});
-			}
-			else {
-				window.addEventListener('message', function(event){
-					if (arg.success) {
-						arg.success(event.data);
-					}
-
-					if (arg.complete) {
-						arg.complete();
-						(! removeFrame) || (!iframe.parentNode) || iframe.parentNode.removeChild(iframe);
-					}
-
-				}, true);
-			}
-
-
-		}
-		catch (e) {
-			if (arg.error) {
-				arg.error(e);
-			}
-		}
-
-	};
-
-	//postMessage method object
-	//arg.parentSrc
-	//arg.processData
-	//arg.beforesend
-	//arg.success
-	//arg.complete
-	//arg.error
-	postMessage.response = function() {
-
-		try {
-
-			if (! window.postMessage) {
-				throw 'your browser does not support postMessage';
-			}
-
-			if (! arg.url) {
-				throw 'please input parent url';
-			}
-
-			if (! arg.processData) {
-				throw 'please input processData function';
-			}
-
-			var getData = arg.processData();
-
-			if (arg.beforesend) {
-				arg.beforesend();
-			}
-
-			var sendMsg = function() {
-				parent.postMessage(getData, arg.url);
-			};
-
-			window.onload = sendMsg;
-
-			if (window.attachEvent) {
-				window.attachEvent('onmessage', function(event){
-					if (arg.success) {
-						arg.success(event.data);
-					}
-
-					if (arg.complete) {
-						arg.complete();
-					}
-
-				});
-			}
-			else {
-				window.addEventListener('message', function(event){
-					if (arg.success) {
-						arg.success(event.data);
-					}
-
-					if (arg.complete) {
-						arg.complete();
-					}
-
-				}, true);
-			}
-
-		}
-		catch (e) {
-			if (arg.error) {
-				arg.error(e);
-			}
-		}
-		
-	};
-
-	//window.name method object
-	//arg.frameSrc
-	//arg.beforesend
-	//arg.success
-	//arg.complete
-	//arg.error
-	var winname = {};
-	winname.request = function() {
-
-		try {
-
-			if (! arg.frameSrc && ! arg.url) {
-				throw 'please input frame src or url';
-			}
-
-			var removeFrame = (arg.removeFrame === true)? arg.removeFrame : false;
-
-			var state = 0;
-
-			if (arg.url) {
-				var iframe = window.document.createElement('iframe');
-
-				iframe.style.display = 'none';
-
-				iframe.id = 'dataFrame';
-
-				iframe.src = arg.url;
-			}
-			else {
-
-				var iframe = arg.frameSrc;
-			}
-			
-
-			if (arg.beforesend) {
-				arg.beforesend();
-			}
-
-			var dataFrame = false;
-			var otherDocument = false;
-
-			var loadfn = function() {
-		        if (state === 1) {
-		            var data = otherDocument.name; 
-
-		            if (arg.success) {
-		            	arg.success(data);
-		            }
-
-		            if (arg.complete) {
-		            	arg.complete();
-		            	(! removeFrame) || (!iframe.parentNode) || iframe.parentNode.removeChild(iframe);
-		            }
-
-		        } else if (state === 0) {
-		            state = 1;
-
-		            dataFrame = window.document.getElementById('dataFrame');
-		            otherDocument = dataFrame.contentWindow || dataFrame.contentDocument;
-
-		            otherDocument.location = "about:blank";
-		        }  
-		    };
-
-		    if (iframe.attachEvent) {
-		        iframe.attachEvent('onload', loadfn);
-		    } else {
-		        iframe.onload  = loadfn;
-		    }
-
-		    window.document.body.appendChild(iframe);
-
-		}
-		catch (e) {
-			if (arg.error) {
-				arg.error(e);
-			}
-		}
-	};
-
-	//window.name method object
-	//arg.processData
-	//arg.error
-	winname.response = function() {
-
-		try {
-
-			if (arg.processData) {
-					window.name = arg.processData();
-			}
-
-		}
-		catch (e) {
-			if (arg.error) {
-				arg.error(e);
-			}
-		}
-	};
-
-	//window.navigator method object
-	//arg.frameSrc
-	//arg.beforesend
-	//arg.success
-	//arg.complete
-	//arg.error
-	var winnav = {};
-	winnav.request = function() {
-
-		try {
-
-			if (! arg.frameSrc && ! arg.url) {
-				throw 'please input frame src';
-			}
-
-			var removeFrame = (arg.removeFrame === true)? arg.removeFrame : false;
-
-			var state = 0;
-
-			if (arg.url) {
-				var iframe = window.document.createElement('iframe');
-
-				iframe.style.display = 'none';
-
-				iframe.id = 'dataFrame';
-
-				iframe.src = arg.url;
-			}
-			else {
-				var iframe = arg.frameSrc;
-			}
-			
-
-			if (arg.processData) {
-				window.navigator['request_data'] = arg.processData();
-			}
-
-			if (arg.beforesend) {
-				arg.beforesend();
-			}
-
-			var dataFrame = false;
-			var otherDocument = false;
-
-			var loadfn = function() {
-
-		        if (state === 1) {
-		            var data = window.navigator['response_data'] || ''; 
-
-		            if (arg.success) {
-		            	arg.success(data);
-		            }
-
-		            if (arg.complete) {
-		            	arg.complete();
-		            	(! removeFrame) || (!iframe.parentNode) || iframe.parentNode.removeChild(iframe);
-		            }
-
-		        } else if (state === 0) {
-		            state = 1;
-
-		            dataFrame = iframe;
-		            otherDocument = dataFrame.contentWindow || dataFrame.contentDocument;
-
-		            otherDocument.location = "about:blank";
-		        }  
-		    };
-
-		    if (iframe.attachEvent) {
-		        iframe.attachEvent('onload', loadfn);
-		    } else {
-		        iframe.onload  = loadfn;
-		    }
-
-		    if (arg.url) {
-		    	window.document.body.appendChild(iframe);
-		    }
-		    
-		}
-		catch (e) {
-			if (arg.error) {
-				arg.error(e);
-			}
-		}
-	};
-
-	//window.navigator method object
-	//arg.processData
-	//arg.error
-	winnav.response = function() {
-
-		try {
-
-			if (arg.processData) {
-					window.navigator['response_data'] = arg.processData();
-			}
-
-			if (arg.beforesend) {
-				arg.beforesend();
-			}
-
-			var data = window.navigator['request_data'] || ''; 
-
-			if (arg.success) {
-		        arg.success(data);
-		    }
-
-		    if (arg.complete) {
-		        arg.complete();
-		    }
-
-		}
-		catch (e) {
-			if (arg.error) {
-				arg.error(e);
-			}
-		}
-	};
-
-	//location.hash method object
-	//arg.frameSrc
-	//arg.beforesend
-	//arg.success
-	//arg.complete
-	//arg.error
-	//arg.interval
-	var lochash = {};
-	lochash.request = function() {
-
-		try {
-
-			if (! arg.frameSrc && ! arg.url) {
-				throw 'please input frame src';
-			}
-
-			if (! arg.interval) {
-				arg.interval = 1000;
-			}
-
-			var removeFrame = (arg.removeFrame === true)? arg.removeFrame : false;
-
-			if (arg.url) {
-				var iframe = document.createElement('iframe');
-
-				iframe.src = arg.url;
-
-				iframe.style.display = 'none';
-
-				window.document.body.appendChild(iframe);
-			}
-			else {
-				var iframe = arg.frameSrc;
-			}
-			
-
-			if (arg.beforesend) {
-				arg.beforesend();		
-			}
-
-
-			var getHash = function() {
-
-				var data = location.hash ? location.hash.substring(1) : '';
-
-				if (arg.success && data !== '') {
-					arg.success(data);
-
-					if (arg.complete) {
-			   			arg.complete();
-			   			(! removeFrame) || (!iframe.parentNode) || iframe.parentNode.removeChild(iframe);
-			   		}
-
-			   		clearInterval(hashInterval);
-				}
-
-			}
-
-			getHash();
-
-			var hashInterval = setInterval(function(){getHash()}, arg.interval);	
-			
-		}
-		catch (e) {
-			if (arg.error) {
-				arg.error(e);
-			}
-		}
-	};
-
-	//location.hash method object
-	//arg.frameSrc
-	//arg.processData
-	//arg.error
-	lochash.response = function() {
-
-		try {
-
-			if (! arg.url) {
-				throw 'please input frame src';
-			}
-
-			if (! arg.processData) {
-				throw 'please input processData function';
-			}
-
-			if (! arg.interval) {
-				arg.interval = 1000;
-			}
-
-			var getData = arg.processData();
-
-			var iframe = document.createElement('iframe');
-    		
-	    	iframe.id = "proxy";
-
-	    	iframe.src = arg.url + '#' + getData;
-
-	    	iframe.style.display ='none';
-
-	    	document.body.appendChild(iframe);
-    		
-    		var tick = function() {
-
-    			getData = arg.processData();
-
-    			iframe.onload = function() {
-  					iframe.src = iframe.src + '#' +getData;
-  				}
-    		}
-
-    		tick();
-
-		}
-		catch (e) {
-			if (arg.error) {
-				arg.error(e);
-			}
-		}
-
-	};
-
-	//location.hash method object
-	//arg.error
-	lochash.proxy = function() {
-
-		try {
-			window.parent.parent.location.hash = self.location.hash.substring(1);
-		}
-		catch (e) {
-			if (arg.error) {
-				arg.error(e);
-			}
-		}
-	};
-
-	//cors method object
-	//arg.url
-	//arg.beforesend
-	//arg.success
-	//arg.complete
-	//arg.error
-	//arg.asyn
-	//arg.method
-	var cors = {};
-	cors.request = function() {
-
-		try {
-
-			if (! arg.url) {
-				throw 'Please input request url';
-			}
-
-			if (! arg.processData) {
-				throw 'please input processData function';
-			}
-
-			if (typeof arg.asyn == undefined) {
+			if (!arg.asyn) {
 				arg.asyn = true;
 			}
 
-			if (typeof arg.method == undefined) {
+			if (!arg.method) {
 				arg.method = "POST";
 			}
 
-			var getData = arg.processData();
-
-			if (arg.beforesend) {
-				arg.beforesend();
+			if (!arg.data) {
+				arg.data = {};
 			}
+
+			var getData = arg.data;
 
 			var xmlhttp = null;
 
@@ -786,18 +189,14 @@ function cross(arg) {
 	  			}
 	  		}
 
-  			xmlhttp.onreadystatechange = function() {
+	  		xmlhttp.onreadystatechange = function() {
 	  			if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
 	    			
 	    			var data = eval( '(' + xmlhttp.responseText + ')');
 
-	    			if (arg.success) {
-	    				arg.success(data);
-	    			}
+	    			arg.succ && arg.succ(data);
 
-	    			if (arg.complete) {
-	    				arg.complete();
-	    			}
+	    			arg.complete && arg.complete();
 
 	    		}
 	    		else if (xmlhttp.readyState === 4 && xmlhttp.status !== 200) {
@@ -830,82 +229,85 @@ function cross(arg) {
 			else {
 				xmlhttp.send();
 			}
+		}
+	},
+	doc_domain: {
+		request: function(arg) {
+			if (! arg.frameSrc && ! arg.url) {
+				throw 'please input frame src';
+			}
+
+			if (! arg.domain) {
+				throw 'please input domain';
+			}
+
+			var removeFrame = (arg.removeFrame === true)? arg.removeFrame : false;
+
+			if (arg.url) {
+				var iframe = document.createElement("iframe");
+
+				iframe.style.display = 'none';
+
+				iframe.src = arg.url;
+
+				window.document.body.appendChild(iframe);
+			}
+			else {
+				var iframe = arg.frameSrc;
+			}
 			
-		}
-		catch (e) {
+			window.document.domain = arg.domain;
 
-			if (arg.error) {
-	    		arg.error(e);
-	    	}
-		}
+			iframe.onload = function() {
 
+				if (iframe.contentDocument || iframe.contentWindow.document){
+					var dataDocument = iframe.contentDocument || iframe.contentWindow.document;
 
-	};
+					if (arg.succ) {
 
-	//default method, cross browser compatibility
-	var crossBrowser = {};
+						arg.succ(dataDocument);
 
-	crossBrowser.request = function() {
+						if (arg.complete) {
+							arg.complete();
 
-		if (transportType === 'msg') {
-			if (window.postMessage) {
-				postMessage.request();
+							(! removeFrame) || (!iframe.parentNode) || iframe.parentNode.removeChild(iframe);
+						}
+					}
+				}
+				else {
+					throw 'cannot get data';
+				}
+				
 			}
-			else {
-				winnav.request();
+		},
+
+		response: function(arg) {
+			window.document.domain = arg.domain;
+
+			if (arg.succ) {
+
+				if (window.parent.document) {
+					arg.succ(window.parent.document);
+				}
+				else {
+					throw 'cannot get data';
+				}
+				
+
+			}
+
+			if (arg.complete) {
+				arg.complete();
 			}
 		}
-		else if (transportType === 'dom') {
-			docdomain.request();
-		}
-		
-
-	};
-
-	crossBrowser.response = function() {
-		
-		if (transportType === 'msg') {
-			if (window.postMessage) {
-				postMessage.response();
-			}
-			else {
-				winnav.response();
-			}
-		}
-		else if (transportType === 'dom') {
-			docdomain.response();
-		}
-		
-	};
-
-
-	//return module public method
-	return {
-		jsonp: jsonp,
-		docDomainRequest: docdomain.request,
-		docDomainResponse: docdomain.response,
-		postMessageRequest: postMessage.request,
-		postMessageResponse: postMessage.response,
-		winNameRequest: winname.request,
-		winNameResponse: winname.response,
-		winNavRequest: winnav.request,
-		winNavResponse: winnav.response,
-		locHashRequest: lochash.request,
-		locHashResponse: lochash.response,
-		locHashProxy: lochash.proxy,
-		corsRequest: cors.request,
-		request: crossBrowser.request,
-		response: crossBrowser.response
-	};
-
-}
-
+	}
+};
 
 (function(win){
 
-	if (!win.cx) {
-		win.cx = cross;
-	}
+	// if (!win.cx) {
+	// 	win.cx = Cross;
+	// }
 	
 	if (!win.cxLog) {
 

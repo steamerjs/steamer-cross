@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>cors</title> 
+</head>
+
+<body>
+
+<script src="../cross.js"></script>
+<script>
+    cx(
+        {
+            url: 'http://leehey.org/frontend/data.php',
+            method: 'GET',
+            processData: function() {
+                return {'hey_get': 'hey', 'omg_get': 'omg'};
+            },
+            beforesend: function() {
+                cxLog('beforesend');
+            },
+            success: function(data) {
+                cxLog(data);
+            },
+            complete: function() {
+                cxLog('complete');
+            },
+            error: function(e) {
+                cxLog(e);
+            }
+        }
+    ).corsRequest();  
+
+</script>
+</body>
+</html>

@@ -2,18 +2,16 @@
 <html>
 <head>
 	<meta charset="utf-8" />
-    <title>document.domain data page</title> 
+    <title>jsonp</title> 
 </head>
 
 <body>
 
-<div id="data">test data</div>
 <script src="../cross.js"></script>
 <script>
-
     var cx = new Cross({
-        domain: 'localhost',
-        type: 'doc_domain',
+        url: 'http://leehey.org/frontend/index.php',
+        type: 'jsonp',
     });
 
     cx.before(function() {
@@ -23,9 +21,8 @@
     }).complete(function() {
         console.log('complete');
     }).fail(function(e) {
-        console.log(e);
-    }).receive();
-    
+        console.log('fail');
+    }).send();
 
 </script>
 </body>
