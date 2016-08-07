@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+    <title></title> 
+</head>
+
+<body>
+<div id="msglisg">
+	
+</div>
+<script>var exports = {};</script>
+<script src="../index.js"></script>
+<script>
+
+	var cross1 = new Cross('project1', 'window1');
+
+	cross1.listen(function(msg) {
+		var content = document.getElementById('msglisg').innerHTML;
+		document.getElementById('msglisg').innerHTML = content + '<br>' + msg;
+	});
+
+
+</script>
+</body>
+</html>

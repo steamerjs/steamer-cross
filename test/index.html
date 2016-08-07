@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+    <title></title> 
+    <style>
+	    a {
+	    	display: block;
+	    	cursor: pointer;
+	    	color: blue;
+	    }
+
+	    iframe {
+	    	display: block;
+	    	border: 4px solid #eee;
+	    }
+    </style>
+</head>
+
+<body>
+<a id="window1">window1</a>
+
+<a id="window2">window2</a>
+
+<p>iframe1</p>
+<iframe id="iframe1" src="./iframe1.html"  width="300px" height="300px"></iframe>
+
+<p>iframe2</p>
+<iframe id="iframe2" src="./iframe2.html" width="300px" height="300px"></iframe>
+
+<script>var exports = {};</script>
+<script src="../index.js"></script>
+<script>
+
+var cross1 = new Cross('project1', 'parent');
+cross1.register('iframe1', document.getElementById('iframe1').contentWindow);
+cross1.register('iframe2', document.getElementById('iframe2').contentWindow);
+
+var cross2 = new Cross('project2', 'parent');
+cross2.register('iframe1', document.getElementById('iframe1').contentWindow);
+cross2.register('iframe2', document.getElementById('iframe2').contentWindow);
+
+setTimeout(function() {
+	// 广播
+	cross2.broadcast('broadcast from project2 parent');
+
+	// 单独发送
+	cross1.send('iframe1', 'hello iframe1 from project1 parent');
+	cross2.send('iframe1', 'hello iframe1 from project2 parent');
+
+	cross2.send('iframe2', 'hello iframe2 from project2 parent');
+}, 100);
+
+document.getElementById('window1').addEventListener('click', function(e) {
+	var window1 = window.open('./window1.html');
+	cross1.register('window1', window1);
+
+	setTimeout(function() {
+		cross1.broadcast('welcome window1 to join project1 parent');
+		cross1.send('window1', 'hello window1 from project1 parent');
+	}, 100);
+});
+
+document.getElementById('window2').addEventListener('click', function(e) {
+	var window2 = window.open('./window2.html');
+	cross2.register('window2', window2);
+
+	setTimeout(function() {
+		cross2.broadcast('welcome window2 to join project2 parent');
+		cross2.send('window2', 'hello window2 from project2 parent');
+	}, 100);
+});
+
+cross1.listen(function(msg) {
+	console.log(msg);
+});
+
+cross2.listen(function(msg) {
+	console.log(msg);
+});
+
+</script>
+</body>
+</html>
