@@ -61,19 +61,24 @@ cross.unregister();
 #### Send message to parent
 ```
 var cross = new Cross('project', 'iframe1');
-cross.send('parent', 'hello parent, from iframe1');
+// if current window is iframe, use window.parent as parent reference
+cross.register('parent', window.parent)
+      send('parent', 'hello parent, from iframe1');
 ```
 
 #### Send message to specific child
 ```
-var cross = new Cross('project', 'iframe1');
-cross.send('iframe2', 'hello ifram2, from iframe1');
+var cross = new Cross('project', 'window1');
+// if current window is a new window, use window.opener as parent reference
+cross.register('parent', window.opener)
+	 .send('iframe2', 'hello ifram2, from iframe1');
 ```
 
 #### Broadcast message to parent and all children
 ```
 var cross = new Cross('project', 'iframe1');
-cross.broadcast('broadcast from iframe1, project1');
+cross.register('parent', window.parent)
+	 .broadcast('broadcast from iframe1, project1');
 ```
 
 ## Demo
