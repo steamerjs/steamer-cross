@@ -3,32 +3,40 @@
 <head>
 	<meta charset="utf-8" />
     <title></title> 
+    <style>
+    	#msglist {
+    		color: red;
+    	}
+    </style>
 </head>
 
 <body>
-<div id="msglisg">
+<div id="msglist">
 	
 </div>
 <script>var exports = {};</script>
 <script src="../index.js"></script>
 <script>
 
-	var cross1 = new Cross('project1', 'iframe1');
-
-	cross1.listen(function(msg) {
-		var content = document.getElementById('msglisg').innerHTML;
-		document.getElementById('msglisg').innerHTML = content + '<br>' + msg;
-		cross1.send('parent', 'send to parent from iframe1, project1');
-		cross1.send('iframe2', 'send to ifram2 from iframe1, project1');
-		cross1.broadcast('broadcast from iframe1, project1');
+	var cross = new Cross('project1', 'iframe1');
+	cross.listen(function(msg) {
+		document.getElementById('msglist').innerHTML = msg;
 	});
 
-	var cross2 = new Cross('project2', 'iframe1');
+	// cross1.listen(function(msg) {
+	// 	var content = document.getElementById('msglisg').innerHTML;
+	// 	document.getElementById('msglisg').innerHTML = content + '<br>' + msg;
+	// 	cross1.send('parent', 'send to parent from iframe1, project1');
+	// 	cross1.send('iframe2', 'send to ifram2 from iframe1, project1');
+	// 	cross1.broadcast('broadcast from iframe1, project1');
+	// });
 
-	cross2.listen(function(msg) {
-		var content = document.getElementById('msglisg').innerHTML;
-		document.getElementById('msglisg').innerHTML = content + '<br>' + msg;
-	});
+	// var cross2 = new Cross('project2', 'iframe1');
+
+	// cross2.listen(function(msg) {
+	// 	var content = document.getElementById('msglisg').innerHTML;
+	// 	document.getElementById('msglisg').innerHTML = content + '<br>' + msg;
+	// });
 
 </script>
 </body>

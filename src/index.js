@@ -19,6 +19,8 @@ function Cross(projectName, relationName) {
 	this.className = "__SteamerCrossV0.1.0__";
 	// target iframes/windows storage
 	this.targets = {};
+	// listen callbacks
+	this.listeners = [];
 	// project name
 	this.projectName = projectName || '';
 	// current iframe/window name
@@ -37,6 +39,7 @@ Cross.prototype.init = function() {
 		throw new Error('"steamer-cross: your browser does not support postMessage"');	
 	}
 
+	this._listen();
 };
 
 /**
@@ -64,14 +67,17 @@ Cross.prototype.register = function (targetName, target) {
  * @return {Object}            [this]
  */
 Cross.prototype.unregister = function(targetName = null) {
-	if (this.targets.hasOwnProperty(targetName)) {
-		delete this.targets[targetName];
-	}
-	// targetName = null, clear all targets
-	else if (!targetName) {
-		this.targets = {};
-	}
 
+	setTimeout(() => {
+		if (this.targets.hasOwnProperty(targetName)) {
+			delete this.targets[targetName];
+		}
+		// targetName = null, clear all targets
+		else if (!targetName) {
+			this.targets = {};
+		}
+	}, 0);
+	
 	return this;
 };
 
@@ -101,7 +107,7 @@ Cross.prototype.broadcast = function (msg, direction = 'ptc', ignoreTargetName =
 		// current window is parent, start broadcasting
 		if (this.relationName === 'parent') {
 			// prevent the broadcasting message sent by child sending back to this child again
-			let ignoreKey = this.projectName + '|' +ignoreTargetName;
+			let ignoreKey = this.projectName + '|' + ignoreTargetName;
 			for (let key in this.targets) {
 				if (key !== ignoreKey) {
 					let targetUrl = this.targets[key].target.location.href;
@@ -153,16 +159,28 @@ Cross.prototype.send = function (targetName, msg, direction = 'ptc', destination
  * @return {Object}            [this]
  */
 Cross.prototype.listen = function (callback) {
+	if (typeof callback === 'function') {
+		this.listeners.push(callback);
+	}
+    return this;
+};
 
+Cross.prototype._triggerListeners = function(data, e) {
+	for (var i = 0, len = this.listeners.length; i < len; i++) {
+		this.listeners[i](data, e);
+	}
+};
+
+Cross.prototype._listen = function() {
 	let listenFunc = (e) => {
 
 		this.register('parent', e.source);
 
 		let msg = e.data;
-		
+
 		// filter msg from other projects
 		if (!~msg.indexOf(this.projectName + '|' + this.relationName)) {
-			return;
+			return this;
 		}
 		
 		msg = msg.split(this.className);
@@ -183,14 +201,14 @@ Cross.prototype.listen = function (callback) {
 			// all => broadcast
 			else if (info[3] === 'all') {
 				// parent will also receive broadcasting message
-				callback(data, e);
+				this._triggerListeners(data, e);
 				// parent broadcast the message to other children
 				// info[4] => the child which broadcast message 
 				this.broadcast(data, 'ptc', info[4]);
 			}
 		}
 		else {
-        	callback(data, e);
+        	this._triggerListeners(data, e);
 		}
     };
 
@@ -200,8 +218,6 @@ Cross.prototype.listen = function (callback) {
     else {
     	window.attachEvent('onmessage', listenFunc);
     }
-
-    return this;
 };
 
 exports.default = Cross;

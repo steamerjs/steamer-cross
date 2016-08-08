@@ -11,16 +11,15 @@
 </head>
 
 <body>
-<div id="msglist">
-	
-</div>
+<div id="msglist"></div>
 <script>var exports = {};</script>
 <script src="../index.js"></script>
 <script>
-	var cross = new Cross('project6', 'window1');
-	// window.opener is a reference of the window which open current window
-	cross.register('parent', window.opener)
-		 .broadcast('hello from window1');
+	var cross = new Cross('project6', 'iframe8');
+	cross.listen(function(msg) {
+        var content = document.getElementById('msglist').innerHTML;
+        document.getElementById('msglist').innerHTML = content + "<br/>" + msg;
+    });
 </script>
 </body>
 </html>

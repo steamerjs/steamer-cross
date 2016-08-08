@@ -12,72 +12,263 @@
 
 	    iframe {
 	    	display: block;
+	    	margin-top: 5px;
 	    	border: 4px solid #eee;
+	    }
+
+	    pre {
+	    	margin: 10px;
+	    }
+
+	    #msglist5, 
+	    #msglist8 {
+	    	color: red;
 	    }
     </style>
 </head>
 
 <body>
+
+<h3>Parent Send Message to Children</h3>
+<h4>Send message to specific child</h4>
+<iframe id="iframe1" src="./iframe1.html"  width="300px" height="75px"></iframe>
+<pre>
+// index.html
+var iframe1 = document.getElementById('iframe1');
+var cross = new Cross('project1', 'parent');
+cross.register('iframe1', iframe1.contentWindow);
+
+iframe1.onload = function() {
+	cross.send('iframe1', "hello ifram1, from parent");
+};
+
+// iframe1.html
+var cross = new Cross('project1', 'iframe1');
+cross.listen(function(msg) {
+	document.getElementById('msglist').innerHTML = msg;
+});
+</pre>
+
+<h4>Broadcast message to all children</h4>
+<iframe id="iframe2" src="./iframe2.html"  width="300px" height="75px"></iframe>
+<iframe id="iframe3" src="./iframe3.html"  width="300px" height="75px"></iframe>
+<pre>
+// index.html
+var iframe2 = document.getElementById('iframe2'),
+iframe3 = document.getElementById('iframe3');
+
+var cross1 = new Cross('project2', 'parent');
+cross1.register('iframe2', iframe2.contentWindow)
+	 .register('iframe3', iframe3.contentWindow);
+
+setTimeout(function(){
+	cross1.broadcast("broadcast message, from parent");
+}, 1000);
+
+// iframe2.html
+var cross = new Cross('project2', 'iframe2');
+cross.listen(function(msg) {
+	document.getElementById('msglist').innerHTML = msg;
+});
+
+// iframe3.html
+var cross = new Cross('project2', 'iframe3');
+cross.listen(function(msg) {
+	document.getElementById('msglist').innerHTML = msg;
+});
+</pre>
+
+<h4>Clear registration</h4>
+<iframe id="iframe4" src="./iframe4.html"  width="300px" height="75px"></iframe>
+<pre>
+// index.html
+var iframe4 = document.getElementById('iframe4');
+
+var cross2 = new Cross('project3', 'parent');
+cross2.register('iframe4', iframe4.contentWindow);
+
+iframe4.onload = function() {
+	cross2.send('iframe4', 'hello iframe4, from parent');
+	cross2.unregister();
+	cross2.send('iframe4', 'hello iframe4 again, from parent');
+};
+
+// iframe4.html
+var cross = new Cross('project3', 'iframe4');
+cross.listen(function(msg) {
+	document.getElementById('msglist').innerHTML = msg;
+});
+</pre>
+
+<h3>Parent Send Message to Children</h3>
+<h4>Send message to parent</h4>
+<iframe id="iframe5" src="./iframe5.html"  width="300px" height="75px"></iframe>
+<div id="msglist5"></div>
+<pre>
+// index.html
+var iframe5 = document.getElementById('iframe5');
+var cross3 = new Cross('project4', 'parent');
+
+iframe5.onload = function() {
+	cross3.register('iframe5', iframe5.contentWindow)
+		  .send('iframe5', 'hello iframe5, from parent');
+};
+
+cross3.listen(function(msg, e) {
+	var content = document.getElementById('msglist5').innerHTML;
+	document.getElementById('msglist5').innerHTML = content + "<br/>" + msg;
+});
+
+// iframe5.html
+var cross = new Cross('project4', 'iframe5');
+cross.listen(function(msg) {
+	document.getElementById('msglist').innerHTML = msg;
+	// you can send message to parent directly after receiving message via parent
+	cross.send('parent', 'reply parent, from iframe');
+});
+
+// if you hope to send message, you can use window.parent as a reference for parent window
+cross.register('parent', window.parent)
+	 .send('parent', 'hello parent, from iframe5')
+</pre>
+
+<h4>Send message to specific child</h4>
+<iframe id="iframe6" src="./iframe6.html"  width="300px" height="75px"></iframe>
+<iframe id="iframe7" src="./iframe7.html"  width="300px" height="75px"></iframe>
+<pre>
+// index.html
+var iframe6 = document.getElementById('iframe6'),
+	iframe7 = document.getElementById('iframe7');
+var cross4 = new Cross('project5', 'parent');
+cross4.register('iframe6', iframe6.contentWindow)
+	  .register('iframe7', iframe7.contentWindow);
+
+// iframe6.html
+var cross = new Cross('project5', 'iframe6');
+	cross.register('parent', window.parent)
+		 .send('iframe7', 'hello iframe7, frome iframe6');
+
+// iframe7.html
+var cross = new Cross('project5', 'iframe7');
+	cross.listen(function(msg) {
+		document.getElementById('msglist').innerHTML = msg;
+	});
+</pre>
+
+<h4>Broadcast message to parent and all children</h4>
+<iframe id="iframe8" src="./iframe8.html"  width="300px" height="75px"></iframe>
+<iframe id="iframe9" src="./iframe9.html"  width="300px" height="75px"></iframe>
 <a id="window1">window1</a>
+<div id="msglist8"></div>
+<pre>
+// index.html
+var iframe8 = document.getElementById('iframe8'),
+	iframe9 = document.getElementById('iframe9');
 
-<a id="window2">window2</a>
+var cross5 = new Cross('project6', 'parent');
+cross5.register('iframe8', iframe8.contentWindow)
+	  .register('iframe9', iframe9.contentWindow);
+cross5.listen(function(msg, e) {
+	var content = document.getElementById('msglist8').innerHTML;
+	document.getElementById('msglist8').innerHTML = content + "<br/>" + msg;
+});
 
-<p>iframe1</p>
-<iframe id="iframe1" src="./iframe1.html"  width="300px" height="300px"></iframe>
+document.getElementById('window1').addEventListener('click', function(e) {
+	var window1 = window.open('./window1.html');
+	cross5.register('window1', window1);
+});
 
-<p>iframe2</p>
-<iframe id="iframe2" src="./iframe2.html" width="300px" height="300px"></iframe>
+// iframe8.html
+var cross = new Cross('project6', 'iframe8');
+cross.listen(function(msg) {
+    var content = document.getElementById('msglist').innerHTML;
+    document.getElementById('msglist').innerHTML = content + "<br/>" + msg;
+});
+
+// iframe9.html
+var cross = new Cross('project6', 'iframe9');
+	cross.register('parent', window.parent)
+		 .broadcast('broadcast from iframe9')
+         .listen(function(msg) {
+            var content = document.getElementById('msglist').innerHTML;
+            document.getElementById('msglist').innerHTML = content + "<br/>" + msg;
+         });
+</pre>
 
 <script>var exports = {};</script>
 <script src="../index.js"></script>
 <script>
+// Send message to specific child
+var iframe1 = document.getElementById('iframe1');
+var cross = new Cross('project1', 'parent');
+cross.register('iframe1', iframe1.contentWindow);
 
-var cross1 = new Cross('project1', 'parent');
-cross1.register('iframe1', document.getElementById('iframe1').contentWindow);
-cross1.register('iframe2', document.getElementById('iframe2').contentWindow);
+iframe1.onload = function() {
+	cross.send('iframe1', "hello iframe1, from parent");
+};
 
-var cross2 = new Cross('project2', 'parent');
-cross2.register('iframe1', document.getElementById('iframe1').contentWindow);
-cross2.register('iframe2', document.getElementById('iframe2').contentWindow);
 
-setTimeout(function() {
-	// 广播
-	cross2.broadcast('broadcast from project2 parent');
+// Broadcast message to all children
+var iframe2 = document.getElementById('iframe2'),
+	iframe3 = document.getElementById('iframe3');
 
-	// 单独发送
-	cross1.send('iframe1', 'hello iframe1 from project1 parent');
-	cross2.send('iframe1', 'hello iframe1 from project2 parent')
-		  .send('iframe2', 'hello iframe2 from project2 parent');
-}, 100);
+var cross1 = new Cross('project2', 'parent');
+cross1.register('iframe2', iframe2.contentWindow)
+	 .register('iframe3', iframe3.contentWindow);
+
+setTimeout(function(){
+	cross1.broadcast("broadcast message, from parent");
+}, 1000);
+
+// Clear registration
+var iframe4 = document.getElementById('iframe4');
+
+var cross2 = new Cross('project3', 'parent');
+cross2.register('iframe4', iframe4.contentWindow);
+
+iframe4.onload = function() {
+	cross2.send('iframe4', 'hello iframe4, from parent');
+	cross2.unregister();
+	cross2.send('iframe4', 'hello iframe4 again, from parent');
+};
+
+// Send message to parent
+var iframe5 = document.getElementById('iframe5');
+var cross3 = new Cross('project4', 'parent');
+
+iframe5.onload = function() {
+	cross3.register('iframe5', iframe5.contentWindow)
+		  .send('iframe5', 'hello iframe5, from parent');
+};
+
+cross3.listen(function(msg, e) {
+	var content = document.getElementById('msglist5').innerHTML;
+	document.getElementById('msglist5').innerHTML = content + "<br/>" + msg;
+});
+
+// Send message to specific child
+var iframe6 = document.getElementById('iframe6'),
+	iframe7 = document.getElementById('iframe7');
+var cross4 = new Cross('project5', 'parent');
+cross4.register('iframe6', iframe6.contentWindow)
+	  .register('iframe7', iframe7.contentWindow);
+
+// Broadcast message to parent and all children
+var iframe8 = document.getElementById('iframe8'),
+	iframe9 = document.getElementById('iframe9');
+
+var cross5 = new Cross('project6', 'parent');
+cross5.register('iframe8', iframe8.contentWindow)
+	  .register('iframe9', iframe9.contentWindow);
+cross5.listen(function(msg, e) {
+	var content = document.getElementById('msglist8').innerHTML;
+	document.getElementById('msglist8').innerHTML = content + "<br/>" + msg;
+});
 
 document.getElementById('window1').addEventListener('click', function(e) {
 	var window1 = window.open('./window1.html');
-	cross1.register('window1', window1);
-
-	setTimeout(function() {
-		cross1.broadcast('welcome window1 to join project1 parent');
-		cross1.send('window1', 'hello window1 from project1 parent');
-	}, 100);
+	cross5.register('window1', window1);
 });
-
-document.getElementById('window2').addEventListener('click', function(e) {
-	var window2 = window.open('./window2.html');
-	cross2.register('window2', window2);
-
-	setTimeout(function() {
-		cross2.broadcast('welcome window2 to join project2 parent');
-		cross2.send('window2', 'hello window2 from project2 parent');
-	}, 100);
-});
-
-cross1.listen(function(msg) {
-	console.log(msg);
-});
-
-cross2.listen(function(msg) {
-	console.log(msg);
-});
-
 </script>
 </body>
 </html>

@@ -17,10 +17,10 @@
 <script>var exports = {};</script>
 <script src="../index.js"></script>
 <script>
-	var cross = new Cross('project6', 'window1');
-	// window.opener is a reference of the window which open current window
-	cross.register('parent', window.opener)
-		 .broadcast('hello from window1');
+	var cross = new Cross('project3', 'iframe4');
+	cross.listen(function(msg) {
+		document.getElementById('msglist').innerHTML = msg;
+	});
 </script>
 </body>
 </html>

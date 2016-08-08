@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+    <title></title> 
+    <style>
+    	#msglist {
+    		color: red;
+    	}
+    </style>
+</head>
+
+<body>
+<div id="msglist"></div>
+<script>var exports = {};</script>
+<script src="../index.js"></script>
+<script>
+	var cross = new Cross('project6', 'iframe9');
+	cross.register('parent', window.parent)
+		 .broadcast('broadcast from iframe9')
+         .listen(function(msg) {
+            var content = document.getElementById('msglist').innerHTML;
+            document.getElementById('msglist').innerHTML = content + "<br/>" + msg;
+         });
+</script>
+</body>
+</html>

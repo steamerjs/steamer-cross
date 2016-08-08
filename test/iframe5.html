@@ -11,16 +11,18 @@
 </head>
 
 <body>
-<div id="msglist">
-	
-</div>
+<div id="msglist"></div>
 <script>var exports = {};</script>
 <script src="../index.js"></script>
 <script>
-	var cross = new Cross('project2', 'iframe2');
+	var cross = new Cross('project4', 'iframe5');
 	cross.listen(function(msg) {
 		document.getElementById('msglist').innerHTML = msg;
+		cross.send('parent', 'reply parent, from iframe');
 	});
+
+	cross.register('parent', window.parent)
+		 .send('parent', 'hello parent, from iframe5')
 </script>
 </body>
 </html>
