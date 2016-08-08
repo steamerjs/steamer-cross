@@ -8,6 +8,9 @@ cross domain communication for development
 	- chidren can send/broadcast message to parent and other children
 * Chaining method
 	- ie, cross.register().send()
+* Iframe And New Window Supported
+	- IE8 - IE9 may have problems in new window communication
+* Exclude Support For IE6 and IE7
 
 
 ## Usage
@@ -24,8 +27,8 @@ cross.send('iframe1', "hello ifram1, from parent");
 #### Broadcast message to all children
 ```
 var cross = new Cross('project1', 'parent');
-// chaining methods
 
+// chaining methods
 var window1 = window.open('./window1.html');
 cross.register('iframe1', document.getElementById('iframe1').contentWindow)
 	 .register('iframe2', document.getElementById('iframe2').contentWindow)
@@ -37,15 +40,10 @@ cross.broadcast("broadcast message, from parent");
 #### Listen to message
 ```
 var cross = new Cross('project1', 'iframe1');
+
 cross.listen(function(msg, event) {
 	// do something here
 });
-```
-
-#### Send message to child B from child A
-```
-var cross = new Cross('project', 'iframe1');
-cross.send('iframe2', 'hello iframe2, from iframe1');
 ```
 
 #### Clear registration
@@ -79,4 +77,4 @@ cross.broadcast('broadcast from iframe1, project1');
 ```
 
 ## Demo
-Please checkout the repo, and take a look at test folder
+Please checkout the repo, and take a look at `test` folder
