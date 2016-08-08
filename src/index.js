@@ -3,7 +3,7 @@
  * steamer-cross
  * github: https://github.com/SteamerTeam/steamer-cross
  * npm: https://www.npmjs.com/package/steamer-cross
- * version: 0.1.0
+ * version: 2.0.0
  * date: 2016.08.06
  */
 
