@@ -46,9 +46,8 @@ setTimeout(function() {
 
 	// 单独发送
 	cross1.send('iframe1', 'hello iframe1 from project1 parent');
-	cross2.send('iframe1', 'hello iframe1 from project2 parent');
-
-	cross2.send('iframe2', 'hello iframe2 from project2 parent');
+	cross2.send('iframe1', 'hello iframe1 from project2 parent')
+		  .send('iframe2', 'hello iframe2 from project2 parent');
 }, 100);
 
 document.getElementById('window1').addEventListener('click', function(e) {
