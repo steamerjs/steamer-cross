@@ -74,6 +74,14 @@ cross.register('parent', window.opener)
 	 .send('iframe2', 'hello ifram2, from iframe1');
 ```
 
+The child which receives message from another child may not know which child send this message to it.
+the `event` parameter in `cross.listen` function only contains parent's information. Therefore, if you hope to identify the actual source, you may include the sourcing information in your message like following:
+```
+var cross = new Cross('project', 'window1');
+cross.register('parent', window.opener)
+	 .send('iframe2', JSON.stringify({content: 'hello ifram2, source: 'iframe1'}), from iframe1');
+```
+
 #### Broadcast message to parent and all children
 ```
 var cross = new Cross('project', 'iframe1');

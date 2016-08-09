@@ -17,7 +17,7 @@
 <script>
 	var cross = new Cross('project5', 'iframe6');
 	cross.register('parent', window.parent)
-		 .send('iframe7', 'hello iframe7, frome iframe6');
+		 .send('iframe7', JSON.stringify({content: 'hello iframe7, frome iframe6', source: "iframe6"}));
 </script>
 </body>
 </html>
